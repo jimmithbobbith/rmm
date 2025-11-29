@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book a Mechanic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>::-webkit-scrollbar { display: none;}</style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'Helvetica', 'SF Pro', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-white font-sans">
+    
+    <div id="app-container" class="min-h-screen flex flex-col">
+        
+        <header id="header" class="bg-black text-white px-6 pt-8 pb-6">
+            <h1 class="text-[32px] font-bold leading-tight mb-2">Book a mechanic</h1>
+            <p class="text-[15px] font-light text-gray-300">Tell us what's happening with your vehicle.</p>
+        </header>
+
+        <div id="progress-bar" class="w-full h-[3px] bg-black">
+            <div id="progress-fill" class="h-full bg-white transition-all duration-300" style="width: 25%"></div>
+        </div>
+
+        <div id="step-indicator" class="px-6 py-4 bg-black">
+            <p class="text-white text-[13px] font-medium tracking-wider">STEP <span id="current-step">1</span> OF 6</p>
+        </div>
+
+        <main id="main-content" class="flex-1 px-6 py-8">
+            
+            <section id="vehicle-section" class="mb-8">
+                <label class="block text-[13px] font-medium tracking-[0.08em] uppercase text-black mb-3">Vehicle Registration</label>
+                <div class="flex gap-3 mb-4">
+                    <input type="text" id="vehicle-reg-input" placeholder="e.g. AB12 CDE" class="flex-1 px-5 py-4 text-[17px] font-medium text-black bg-white border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-black uppercase">
+                    <button id="lookup-vehicle-btn" class="px-6 py-4 text-[15px] font-medium text-black bg-white border-2 border-black rounded-lg hover:bg-black hover:text-white transition-colors whitespace-nowrap">Look up</button>
+                </div>
+                <div id="vehicle-result" class="hidden p-4 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-between">
+                    <span class="text-[17px] font-medium text-black">Ford Focus (2014)</span>
+                    <button id="clear-vehicle-btn" class="text-black hover:text-gray-600">
+                        <i class="fa-solid fa-xmark text-[20px]"></i>
+                    </button>
+                </div>
+            </section>
+
+            <section id="location-section" class="mb-8 hidden">
+                <label class="block text-[13px] font-medium tracking-[0.08em] uppercase text-black mb-3">Your Postcode</label>
+                <div class="flex gap-3 mb-4">
+                    <input type="text" id="postcode-input" placeholder="e.g. BH24 1AA" class="flex-1 px-5 py-4 text-[17px] font-medium text-black bg-white border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-black uppercase">
+                    <button id="lookup-postcode-btn" class="px-6 py-4 text-[15px] font-medium text-black bg-white border-2 border-black rounded-lg hover:bg-black hover:text-white transition-colors whitespace-nowrap">Look up</button>
+                </div>
+                <div id="postcode-result" class="hidden">
+                    <p class="text-[17px] font-medium text-black">Ringwood, Hampshire</p>
+                </div>
+            </section>
+
+            <section id="contact-section" class="mb-8 hidden">
+                <label class="block text-[13px] font-medium tracking-[0.08em] uppercase text-black mb-3">Your Phone Number</label>
+                <input type="tel" id="phone-input" placeholder="07XXX XXXXXX" class="w-full px-5 py-4 text-[17px] font-medium text-black bg-white border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
+            </section>
+
+            <section id="problem-section" class="mb-8 hidden">
+                <label class="block text-[13px] font-medium tracking-[0.08em] uppercase text-black mb-3">Describe the Problem</label>
+                <textarea id="problem-input" rows="6" placeholder="Describe what's happening — noises, smells, warning lights…" class="w-full px-5 py-4 text-[17px] font-light text-black bg-white border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-black resize-none"></textarea>
+            </section>
+
+            <section id="ai-chat-section" class="mb-8 hidden">
+                <div id="chat-container" class="space-y-4 mb-6">
+                    
+                </div>
+            </section>
+
+            <section id="photo-section" class="mb-8 hidden">
+                <label class="block text-[13px] font-medium tracking-[0.08em] uppercase text-black mb-3">Add Photo (Optional)</label>
+                <div id="photo-upload-area" class="border-2 border-dashed border-black rounded-lg p-8 text-center cursor-pointer hover:bg-gray-50 transition-colors">
+                    <input type="file" id="photo-input" accept="image/*" class="hidden">
+                    <i class="fa-solid fa-camera text-[32px] text-black mb-3"></i>
+                    <p class="text-[15px] font-medium text-black">Tap to upload photo</p>
+                </div>
+                <div id="photo-preview" class="hidden mt-4 relative">
+                    <img id="preview-image" src="" alt="Preview" class="w-full h-48 object-cover rounded-lg border-2 border-black">
+                    <button id="delete-photo-btn" class="absolute top-2 right-2 w-10 h-10 bg-white rounded-full flex items-center justify-center border-2 border-black hover:bg-black hover:text-white transition-colors">
+                        <i class="fa-solid fa-trash text-[16px]"></i>
+                    </button>
+                </div>
+            </section>
+
+            <section id="confirmation-section" class="hidden fixed inset-0 bg-white z-50 flex items-center justify-center px-6">
+                <div class="text-center">
+                    <div class="w-24 h-24 mx-auto mb-6 border-4 border-black rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-check text-[48px] text-black"></i>
+                    </div>
+                    <h2 class="text-[28px] font-bold text-black mb-3">Request sent</h2>
+                    <p class="text-[17px] font-light text-gray-600">A mechanic will contact you shortly.</p>
+                </div>
+            </section>
+
+        </main>
+
+        <div id="bottom-action-bar" class="sticky bottom-0 bg-white border-t-2 border-black px-6 py-4">
+            <button id="next-btn" class="w-full py-5 text-[17px] font-semibold text-white bg-black rounded-xl hover:bg-gray-900 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
+                Continue
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        window.addEventListener('load', function() {
+            const steps = {
+                current: 1,
+                total: 6
+            };
+
+            const state = {
+                vehicleConfirmed: false,
+                postcodeConfirmed: false,
+                phoneEntered: false,
+                problemDescribed: false,
+                aiQuestionsComplete: false,
+                photoUploaded: false,
+                aiQuestionIndex: 0,
+                aiQuestions: [
+                    "When did the issue first start?",
+                    "Does it only happen when starting, driving, or idling?",
+                    "Are there any dashboard lights on?"
+                ]
+            };
+
+            const elements = {
+                vehicleRegInput: document.getElementById('vehicle-reg-input'),
+                lookupVehicleBtn: document.getElementById('lookup-vehicle-btn'),
+                vehicleResult: document.getElementById('vehicle-result'),
+                clearVehicleBtn: document.getElementById('clear-vehicle-btn'),
+                locationSection: document.getElementById('location-section'),
+                postcodeInput: document.getElementById('postcode-input'),
+                lookupPostcodeBtn: document.getElementById('lookup-postcode-btn'),
+                postcodeResult: document.getElementById('postcode-result'),
+                contactSection: document.getElementById('contact-section'),
+                phoneInput: document.getElementById('phone-input'),
+                problemSection: document.getElementById('problem-section'),
+                problemInput: document.getElementById('problem-input'),
+                aiChatSection: document.getElementById('ai-chat-section'),
+                chatContainer: document.getElementById('chat-container'),
+                photoSection: document.getElementById('photo-section'),
+                photoUploadArea: document.getElementById('photo-upload-area'),
+                photoInput: document.getElementById('photo-input'),
+                photoPreview: document.getElementById('photo-preview'),
+                previewImage: document.getElementById('preview-image'),
+                deletePhotoBtn: document.getElementById('delete-photo-btn'),
+                confirmationSection: document.getElementById('confirmation-section'),
+                nextBtn: document.getElementById('next-btn'),
+                progressFill: document.getElementById('progress-fill'),
+                currentStepSpan: document.getElementById('current-step')
+            };
+
+            function updateProgress() {
+                const percentage = (steps.current / steps.total) * 100;
+                elements.progressFill.style.width = percentage + '%';
+                elements.currentStepSpan.textContent = steps.current;
+            }
+
+            function addAIMessage(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'flex justify-start';
+                messageDiv.innerHTML = `
+                    <div class="bg-black text-white px-5 py-4 rounded-2xl rounded-tl-sm max-w-[85%]">
+                        <p class="text-[15px] font-light leading-relaxed">${message}</p>
+                    </div>
+                `;
+                elements.chatContainer.appendChild(messageDiv);
+                elements.chatContainer.scrollTop = elements.chatContainer.scrollHeight;
+            }
+
+            function addUserMessage(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'flex justify-end';
+                messageDiv.innerHTML = `
+                    <div class="bg-gray-100 text-black px-5 py-4 rounded-2xl rounded-tr-sm max-w-[85%]">
+                        <p class="text-[15px] font-normal leading-relaxed">${message}</p>
+                    </div>
+                `;
+                elements.chatContainer.appendChild(messageDiv);
+                elements.chatContainer.scrollTop = elements.chatContainer.scrollHeight;
+            }
+
+            function addUserInput() {
+                const inputDiv = document.createElement('div');
+                inputDiv.className = 'flex gap-2';
+                inputDiv.innerHTML = `
+                    <input type="text" id="user-response" placeholder="Type your answer..." class="flex-1 px-4 py-3 text-[15px] text-black bg-white border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
+                    <button id="send-response-btn" class="px-5 py-3 text-[15px] font-medium text-white bg-black rounded-lg hover:bg-gray-900 transition-colors">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                `;
+                elements.chatContainer.appendChild(inputDiv);
+                
+                const userResponseInput = document.getElementById('user-response');
+                const sendResponseBtn = document.getElementById('send-response-btn');
+                
+                userResponseInput.focus();
+                
+                function sendResponse() {
+                    const response = userResponseInput.value.trim();
+                    if (response) {
+                        addUserMessage(response);
+                        inputDiv.remove();
+                        
+                        setTimeout(() => {
+                            if (response.toLowerCase().includes('all i know') || response.toLowerCase().includes('told you all') || state.aiQuestionIndex >= 2) {
+                                addAIMessage("Thank you. I'll package this clearly for your mechanic.");
+                                state.aiQuestionsComplete = true;
+                                elements.nextBtn.disabled = false;
+                                elements.nextBtn.textContent = 'Continue';
+                            } else {
+                                state.aiQuestionIndex++;
+                                if (state.aiQuestionIndex < state.aiQuestions.length) {
+                                    setTimeout(() => {
+                                        addAIMessage(state.aiQuestions[state.aiQuestionIndex]);
+                                        setTimeout(addUserInput, 800);
+                                    }, 1000);
+                                } else {
+                                    addAIMessage("Thank you. I'll package this clearly for your mechanic.");
+                                    state.aiQuestionsComplete = true;
+                                    elements.nextBtn.disabled = false;
+                                    elements.nextBtn.textContent = 'Continue';
+                                }
+                            }
+                        }, 1000);
+                    }
+                }
+                
+                sendResponseBtn.addEventListener('click', sendResponse);
+                userResponseInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') sendResponse();
+                });
+            }
+
+            elements.lookupVehicleBtn.addEventListener('click', function() {
+                const reg = elements.vehicleRegInput.value.trim();
+                if (reg) {
+                    elements.vehicleResult.classList.remove('hidden');
+                    state.vehicleConfirmed = true;
+                    elements.nextBtn.disabled = false;
+                }
+            });
+
+            elements.clearVehicleBtn.addEventListener('click', function() {
+                elements.vehicleResult.classList.add('hidden');
+                elements.vehicleRegInput.value = '';
+                state.vehicleConfirmed = false;
+                elements.nextBtn.disabled = true;
+            });
+
+            elements.lookupPostcodeBtn.addEventListener('click', function() {
+                const postcode = elements.postcodeInput.value.trim();
+                if (postcode) {
+                    elements.postcodeResult.classList.remove('hidden');
+                    state.postcodeConfirmed = true;
+                    elements.nextBtn.disabled = false;
+                }
+            });
+
+            elements.phoneInput.addEventListener('input', function() {
+                state.phoneEntered = this.value.trim().length > 0;
+                elements.nextBtn.disabled = !state.phoneEntered;
+            });
+
+            elements.problemInput.addEventListener('input', function() {
+                state.problemDescribed = this.value.trim().length > 20;
+                elements.nextBtn.disabled = !state.problemDescribed;
+            });
+
+            elements.photoUploadArea.addEventListener('click', function() {
+                elements.photoInput.click();
+            });
+
+            elements.photoInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        elements.previewImage.src = e.target.result;
+                        elements.photoPreview.classList.remove('hidden');
+                        elements.photoUploadArea.classList.add('hidden');
+                        state.photoUploaded = true;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            elements.deletePhotoBtn.addEventListener('click', function() {
+                elements.photoPreview.classList.add('hidden');
+                elements.photoUploadArea.classList.remove('hidden');
+                elements.photoInput.value = '';
+                state.photoUploaded = false;
+            });
+
+            elements.nextBtn.addEventListener('click', function() {
+                if (steps.current === 1 && state.vehicleConfirmed) {
+                    elements.locationSection.classList.remove('hidden');
+                    steps.current = 2;
+                    elements.nextBtn.disabled = true;
+                    updateProgress();
+                } else if (steps.current === 2 && state.postcodeConfirmed) {
+                    elements.contactSection.classList.remove('hidden');
+                    steps.current = 3;
+                    elements.nextBtn.disabled = true;
+                    updateProgress();
+                } else if (steps.current === 3 && state.phoneEntered) {
+                    elements.problemSection.classList.remove('hidden');
+                    steps.current = 4;
+                    elements.nextBtn.disabled = true;
+                    updateProgress();
+                } else if (steps.current === 4 && state.problemDescribed) {
+                    elements.aiChatSection.classList.remove('hidden');
+                    elements.nextBtn.disabled = true;
+                    elements.nextBtn.textContent = 'Processing...';
+                    steps.current = 5;
+                    updateProgress();
+                    
+                    setTimeout(() => {
+                        addAIMessage("Thanks. Before we send this to your mechanic, can I clarify a couple of things?");
+                        setTimeout(() => {
+                            addAIMessage(state.aiQuestions[0]);
+                            setTimeout(addUserInput, 800);
+                        }, 1500);
+                    }, 1000);
+                } else if (steps.current === 5 && state.aiQuestionsComplete) {
+                    elements.photoSection.classList.remove('hidden');
+                    steps.current = 6;
+                    elements.nextBtn.textContent = 'Send request';
+                    elements.nextBtn.disabled = false;
+                    updateProgress();
+                } else if (steps.current === 6) {
+                    elements.confirmationSection.classList.remove('hidden');
+                }
+            });
+
+            updateProgress();
+        });
+    </script>
+
+</body>
+</html>

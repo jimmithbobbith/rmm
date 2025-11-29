@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Number</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>::-webkit-scrollbar { display: none;}</style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'Helvetica', 'SF Pro', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-white font-sans">
+    
+    <div id="app-container" class="min-h-screen flex flex-col">
+        
+        <header id="header" class="bg-black text-white px-6 pt-8 pb-6">
+            <button id="back-btn" class="mb-4 text-white hover:text-gray-300 transition-colors">
+                <i class="fa-solid fa-arrow-left text-[20px]"></i>
+            </button>
+            <h1 class="text-[32px] font-bold leading-tight mb-2">Your contact</h1>
+            <p class="text-[15px] font-light text-gray-300">We'll use this to connect you with a mechanic.</p>
+        </header>
+
+        <div id="progress-bar" class="w-full h-[3px] bg-black">
+            <div id="progress-fill" class="h-full bg-white transition-all duration-300" style="width: 50%"></div>
+        </div>
+
+        <div id="step-indicator" class="px-6 py-4 bg-black">
+            <p class="text-white text-[13px] font-medium tracking-wider">STEP 3 OF 6</p>
+        </div>
+
+        <main id="main-content" class="flex-1 px-6 py-8 flex flex-col">
+            
+            <section id="phone-section" class="mb-8">
+                <label class="block text-[13px] font-medium tracking-[0.08em] uppercase text-black mb-3">Your Phone Number</label>
+                <div class="relative">
+                    <div class="absolute left-5 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
+                        <span class="text-[17px] font-medium text-black">+44</span>
+                        <div class="w-[1px] h-6 bg-gray-300"></div>
+                    </div>
+                    <input 
+                        type="tel" 
+                        id="phone-input" 
+                        placeholder="7XXX XXX XXX" 
+                        maxlength="13"
+                        class="w-full pl-20 pr-5 py-5 text-[17px] font-medium text-black bg-white border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+                    >
+                </div>
+                <p class="mt-3 text-[13px] font-light text-gray-500">Enter your UK mobile number without the leading 0</p>
+            </section>
+
+            <section id="info-card" class="mb-8 p-5 bg-gray-50 border border-gray-200 rounded-lg">
+                <div class="flex items-start gap-3">
+                    <i class="fa-solid fa-shield-halved text-[20px] text-black mt-1"></i>
+                    <div>
+                        <h3 class="text-[15px] font-semibold text-black mb-2">Your privacy matters</h3>
+                        <p class="text-[14px] font-light text-gray-600 leading-relaxed">Your phone number will only be shared with verified mechanics in your area. We never sell your data.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="format-examples" class="mb-8">
+                <p class="text-[13px] font-medium tracking-[0.08em] uppercase text-black mb-3">Accepted Formats</p>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg">
+                        <i class="fa-solid fa-check text-[14px] text-green-600"></i>
+                        <span class="text-[14px] font-light text-gray-600">7123 456 789</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg">
+                        <i class="fa-solid fa-check text-[14px] text-green-600"></i>
+                        <span class="text-[14px] font-light text-gray-600">7123456789</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg">
+                        <i class="fa-solid fa-xmark text-[14px] text-red-600"></i>
+                        <span class="text-[14px] font-light text-gray-600">07123 456 789</span>
+                    </div>
+                </div>
+            </section>
+
+            <div id="validation-message" class="hidden mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div class="flex items-start gap-3">
+                    <i class="fa-solid fa-circle-exclamation text-[18px] text-red-600 mt-0.5"></i>
+                    <p class="text-[14px] font-medium text-red-800">Please enter a valid UK mobile number</p>
+                </div>
+            </div>
+
+            <div class="flex-1"></div>
+
+            <section id="why-phone" class="mb-6">
+                <button id="why-btn" class="w-full flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    <span class="text-[15px] font-medium text-black">Why do we need your phone number?</span>
+                    <i class="fa-solid fa-chevron-right text-[14px] text-gray-400"></i>
+                </button>
+                <div id="why-content" class="hidden mt-3 p-4 bg-gray-50 rounded-lg">
+                    <p class="text-[14px] font-light text-gray-600 leading-relaxed mb-3">Your phone number is essential for:</p>
+                    <ul class="space-y-2">
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-circle text-[6px] text-black mt-2"></i>
+                            <span class="text-[14px] font-light text-gray-600">Mechanics to contact you directly</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-circle text-[6px] text-black mt-2"></i>
+                            <span class="text-[14px] font-light text-gray-600">SMS updates on your request status</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-circle text-[6px] text-black mt-2"></i>
+                            <span class="text-[14px] font-light text-gray-600">Emergency contact if needed</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+        </main>
+
+        <div id="bottom-action-bar" class="sticky bottom-0 bg-white border-t-2 border-black px-6 py-4">
+            <button id="continue-btn" class="w-full py-5 text-[17px] font-semibold text-white bg-black rounded-xl hover:bg-gray-900 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed" disabled>
+                Continue
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        window.addEventListener('load', function() {
+            const elements = {
+                phoneInput: document.getElementById('phone-input'),
+                continueBtn: document.getElementById('continue-btn'),
+                validationMessage: document.getElementById('validation-message'),
+                backBtn: document.getElementById('back-btn'),
+                whyBtn: document.getElementById('why-btn'),
+                whyContent: document.getElementById('why-content')
+            };
+
+            function formatPhoneNumber(value) {
+                const cleaned = value.replace(/\D/g, '');
+                
+                if (cleaned.length <= 4) {
+                    return cleaned;
+                } else if (cleaned.length <= 7) {
+                    return cleaned.slice(0, 4) + ' ' + cleaned.slice(4);
+                } else {
+                    return cleaned.slice(0, 4) + ' ' + cleaned.slice(4, 7) + ' ' + cleaned.slice(7, 10);
+                }
+            }
+
+            function validatePhoneNumber(value) {
+                const cleaned = value.replace(/\D/g, '');
+                return cleaned.length === 10 && cleaned.startsWith('7');
+            }
+
+            elements.phoneInput.addEventListener('input', function(e) {
+                let value = e.target.value;
+                const cursorPosition = e.target.selectionStart;
+                const oldLength = value.length;
+                
+                const formatted = formatPhoneNumber(value);
+                e.target.value = formatted;
+                
+                const newLength = formatted.length;
+                const diff = newLength - oldLength;
+                e.target.setSelectionRange(cursorPosition + diff, cursorPosition + diff);
+                
+                const isValid = validatePhoneNumber(formatted);
+                
+                if (isValid) {
+                    elements.continueBtn.disabled = false;
+                    elements.validationMessage.classList.add('hidden');
+                } else {
+                    elements.continueBtn.disabled = true;
+                    if (formatted.length >= 10) {
+                        elements.validationMessage.classList.remove('hidden');
+                    } else {
+                        elements.validationMessage.classList.add('hidden');
+                    }
+                }
+            });
+
+            elements.phoneInput.addEventListener('keypress', function(e) {
+                const char = String.fromCharCode(e.which);
+                if (!/[0-9]/.test(char)) {
+                    e.preventDefault();
+                }
+            });
+
+            elements.continueBtn.addEventListener('click', function() {
+                const phoneValue = elements.phoneInput.value.replace(/\D/g, '');
+                if (validatePhoneNumber(phoneValue)) {
+                    console.log('Phone number submitted: +44' + phoneValue);
+                }
+            });
+
+            elements.backBtn.addEventListener('click', function() {
+                window.history.back();
+            });
+
+            elements.whyBtn.addEventListener('click', function() {
+                elements.whyContent.classList.toggle('hidden');
+                const icon = elements.whyBtn.querySelector('i');
+                if (elements.whyContent.classList.contains('hidden')) {
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-right');
+                } else {
+                    icon.classList.remove('fa-chevron-right');
+                    icon.classList.add('fa-chevron-down');
+                }
+            });
+
+            elements.phoneInput.focus();
+        });
+    </script>
+
+</body>
+</html>
