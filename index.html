@@ -1,156 +1,212 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ClickMechanic booking flow</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <script defer src="https://kit.fontawesome.com/6a1595cfe8.js" crossorigin="anonymous"></script>
-  <script defer src="app.js"></script>
-</head>
-<body>
-  <header class="topbar">
-    <div class="logo"><i class="fa-solid fa-map-location-dot"></i><span>ClickMechanic</span></div>
-    <a class="help-link" href="#">Need help?</a>
-  </header>
-
-  <div class="progress">
-    <div class="progress-steps" id="progress-steps"></div>
-  </div>
-
-  <main class="main">
-    <div id="step-car" class="step-pane active">
-      <div class="card">
-        <h2 class="section-title">Tell us about your car</h2>
-        <p class="section-subtitle">Use your number plate so we can quote correctly and find mechanics nearby.</p>
-        <div class="input-row">
-          <div class="input">
-            <label for="reg">Registration</label>
-            <input id="reg" name="reg" placeholder="AB12 CDE" autocomplete="off">
-          </div>
-          <div class="input">
-            <label for="postcode">Postcode</label>
-            <input id="postcode" name="postcode" placeholder="e.g. BH24 1AA" autocomplete="off">
-          </div>
-        </div>
-        <div class="lookup-row">
-          <div id="location-label" class="lookup-chip" aria-live="polite"></div>
-          <div id="vehicle-label" class="lookup-chip" aria-live="polite"></div>
-        </div>
-        <div id="car-error" class="error" aria-live="polite"></div>
-        <div class="summary-box" id="car-summary"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ClickMechanic booking flow</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script
+      defer
+      src="https://kit.fontawesome.com/6a1595cfe8.js"
+      crossorigin="anonymous"
+    ></script>
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="logo">
+        <i class="fa-solid fa-map-location-dot"></i><span>ClickMechanic</span>
       </div>
+      <a class="help-link" href="#">Need help?</a>
+    </header>
+
+    <div class="progress">
+      <div class="progress-steps" id="progress-steps"></div>
     </div>
 
-    <div id="step-category" class="step-pane">
-      <div class="card">
-        <h2 class="section-title">What does your vehicle need?</h2>
-        <p class="section-subtitle">Pick a category to see services available for your car and location.</p>
-        <div id="category-grid" class="category-grid"></div>
-        <div id="category-error" class="error" aria-live="polite"></div>
-      </div>
-    </div>
-
-    <div id="step-services" class="step-pane">
-      <div class="grid-two">
+    <main class="main">
+      <div id="step-car" class="step-pane active">
         <div class="card">
-          <div id="category-header"></div>
-          <div id="services-error" class="error" aria-live="polite"></div>
-          <div id="service-list" class="service-list"></div>
-        </div>
-        <aside class="basket" id="basket"></aside>
-      </div>
-      <div class="basket-mobile" id="basket-mobile"></div>
-    </div>
-
-    <div id="step-details" class="step-pane">
-      <div class="grid-two">
-        <div class="card">
-          <h2 class="section-title">Contact & availability</h2>
-          <p class="section-subtitle">We’ll share these details with your mechanic to confirm the booking.</p>
-          <div class="summary-box" id="details-summary"></div>
+          <h2 class="section-title">Tell us about your car</h2>
+          <p class="section-subtitle">
+            Use your number plate so we can quote correctly and find mechanics
+            nearby.
+          </p>
           <div class="input-row">
             <div class="input">
-              <label for="full-name">Full name</label>
-              <input id="full-name" placeholder="Sam Example">
+              <label for="reg">Registration</label>
+              <input
+                id="reg"
+                name="reg"
+                placeholder="AB12 CDE"
+                autocomplete="off"
+              />
             </div>
             <div class="input">
-              <label for="email">Email <span class="muted">(optional)</span></label>
-              <input id="email" type="email" placeholder="you@example.com">
-            </div>
-            <div class="input">
-              <label for="phone">Phone <span class="required">Required</span></label>
-              <input id="phone" type="tel" placeholder="07xxx xxxxxx">
+              <label for="postcode">Postcode</label>
+              <input
+                id="postcode"
+                name="postcode"
+                placeholder="e.g. BH24 1AA"
+                autocomplete="off"
+              />
             </div>
           </div>
-          <div class="input-row">
-            <div class="input">
-              <label for="address-line">Address</label>
-              <input id="address-line" placeholder="123 Sample Street">
-            </div>
-            <div class="input">
-              <label for="address-postcode">Postcode</label>
-              <input id="address-postcode" placeholder="AB12 3CD">
-            </div>
+          <div class="lookup-row">
+            <div
+              id="location-label"
+              class="lookup-chip"
+              aria-live="polite"
+            ></div>
+            <div
+              id="vehicle-label"
+              class="lookup-chip"
+              aria-live="polite"
+            ></div>
           </div>
-          <div class="input">
-            <label for="notes">Describe the problem</label>
-            <textarea id="notes" placeholder="Tell us about noises, smells or warning lights"></textarea>
+          <div id="car-error" class="error" aria-live="polite"></div>
+          <div class="summary-box" id="car-summary"></div>
+        </div>
+      </div>
+
+      <div id="step-category" class="step-pane">
+        <div class="card">
+          <h2 class="section-title">What does your vehicle need?</h2>
+          <p class="section-subtitle">
+            Pick a category to see services available for your car and location.
+          </p>
+          <div id="category-grid" class="category-grid"></div>
+          <div id="category-error" class="error" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div id="step-services" class="step-pane">
+        <div class="grid-two">
+          <div class="card">
+            <div id="category-header"></div>
+            <div id="services-error" class="error" aria-live="polite"></div>
+            <div id="service-list" class="service-list"></div>
           </div>
-          <div class="input clarifier">
-            <div class="clarifier-header">
-              <div>
-                <div class="clarifier-title">AI clarifier</div>
-                <p class="section-subtitle">For diagnostic or vague issues we can ask up to 3 quick questions.</p>
+          <aside class="basket" id="basket"></aside>
+        </div>
+        <div class="basket-mobile" id="basket-mobile"></div>
+      </div>
+
+      <div id="step-details" class="step-pane">
+        <div class="grid-two">
+          <div class="card">
+            <h2 class="section-title">Contact & availability</h2>
+            <p class="section-subtitle">
+              We’ll share these details with your mechanic to confirm the
+              booking.
+            </p>
+            <div class="summary-box" id="details-summary"></div>
+            <div class="input-row">
+              <div class="input">
+                <label for="full-name">Full name</label>
+                <input id="full-name" placeholder="Sam Example" />
               </div>
-              <button class="button secondary" id="clarifier-start" type="button">Start clarifier</button>
+              <div class="input">
+                <label for="email"
+                  >Email <span class="muted">(optional)</span></label
+                >
+                <input id="email" type="email" placeholder="you@example.com" />
+              </div>
+              <div class="input">
+                <label for="phone"
+                  >Phone <span class="required">Required</span></label
+                >
+                <input id="phone" type="tel" placeholder="07xxx xxxxxx" />
+              </div>
             </div>
-            <div id="clarifier-panel" class="clarifier-panel"></div>
+            <div class="input-row">
+              <div class="input">
+                <label for="address-line">Address</label>
+                <input id="address-line" placeholder="123 Sample Street" />
+              </div>
+              <div class="input">
+                <label for="address-postcode">Postcode</label>
+                <input id="address-postcode" placeholder="AB12 3CD" />
+              </div>
+            </div>
+            <div class="input">
+              <label for="notes">Describe the problem</label>
+              <textarea
+                id="notes"
+                placeholder="Tell us about noises, smells or warning lights"
+              ></textarea>
+            </div>
+            <div class="input clarifier">
+              <div class="clarifier-header">
+                <div>
+                  <div class="clarifier-title">AI clarifier</div>
+                  <p class="section-subtitle">
+                    For diagnostic or vague issues we can ask up to 3 quick
+                    questions.
+                  </p>
+                </div>
+                <button
+                  class="button secondary"
+                  id="clarifier-start"
+                  type="button"
+                >
+                  Start clarifier
+                </button>
+              </div>
+              <div id="clarifier-panel" class="clarifier-panel"></div>
+            </div>
+            <div class="input">
+              <label>Is the vehicle driveable?</label>
+              <div class="pills" id="driveable"></div>
+            </div>
+            <div class="input">
+              <label>When is the vehicle available?</label>
+              <div id="week-availability" class="week-grid"></div>
+            </div>
+            <div id="details-error" class="error" aria-live="polite"></div>
           </div>
-          <div class="input">
-            <label>Is the vehicle driveable?</label>
-            <div class="pills" id="driveable"></div>
-          </div>
-          <div class="input">
-            <label>When is the vehicle available?</label>
-            <div id="week-availability" class="week-grid"></div>
-          </div>
-          <div id="details-error" class="error" aria-live="polite"></div>
+          <aside class="basket" id="basket-details"></aside>
         </div>
-        <aside class="basket" id="basket-details"></aside>
+      </div>
+
+      <div id="step-confirm" class="step-pane">
+        <div class="card">
+          <h2 class="section-title">Confirmation</h2>
+          <p class="section-subtitle">
+            Review your request before sending it to your mechanic.
+          </p>
+          <div class="summary-box" id="confirm-summary"></div>
+          <div class="timeline">
+            <div>1) We share your request</div>
+            <div>2) Mechanic checks availability</div>
+            <div>3) You confirm and pay securely</div>
+          </div>
+          <p>
+            <strong>What happens next?</strong> A mechanic will review your
+            request and send you a confirmation. You will only be charged after
+            you approve the booking.
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <div class="modal" id="info-modal" role="dialog" aria-modal="true">
+      <div class="modal-content">
+        <button class="modal-close" aria-label="Close">&times;</button>
+        <h3 id="modal-title"></h3>
+        <p id="modal-description"></p>
+        <ul id="modal-list"></ul>
+        <button id="modal-add" class="button" data-service="">
+          Add to basket
+        </button>
       </div>
     </div>
 
-    <div id="step-confirm" class="step-pane">
-      <div class="card">
-        <h2 class="section-title">Confirmation</h2>
-        <p class="section-subtitle">Review your request before sending it to your mechanic.</p>
-        <div class="summary-box" id="confirm-summary"></div>
-        <div class="timeline">
-          <div>1) We share your request</div>
-          <div>2) Mechanic checks availability</div>
-          <div>3) You confirm and pay securely</div>
-        </div>
-        <p><strong>What happens next?</strong> A mechanic will review your request and send you a confirmation. You will only be charged after you approve the booking.</p>
-      </div>
+    <div class="navbar">
+      <button id="back" class="button secondary">Back</button>
+      <button id="next" class="button">Continue</button>
     </div>
-  </main>
-
-  <div class="modal" id="info-modal" role="dialog" aria-modal="true">
-    <div class="modal-content">
-      <button class="modal-close" aria-label="Close">&times;</button>
-      <h3 id="modal-title"></h3>
-      <p id="modal-description"></p>
-      <ul id="modal-list"></ul>
-      <button id="modal-add" class="button" data-service="">Add to basket</button>
-    </div>
-  </div>
-
-  <div class="navbar">
-    <button id="back" class="button secondary">Back</button>
-    <button id="next" class="button">Continue</button>
-  </div>
-</body>
+  </body>
 </html>

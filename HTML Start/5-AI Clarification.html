@@ -1,255 +1,334 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AI Clarification</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>::-webkit-scrollbar { display: none;}</style>
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'sans': ['Inter', 'Helvetica', 'SF Pro', 'system-ui', 'sans-serif']
-                    }
-                }
-            }
-        }
+      window.FontAwesomeConfig = { autoReplaceSvg: "nest" };
     </script>
-</head>
-<body class="bg-white font-sans">
-    
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      ::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "Helvetica", "SF Pro", "system-ui", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-white font-sans">
     <div id="app-container" class="min-h-screen flex flex-col">
-        
-        <header id="header" class="bg-black text-white px-6 pt-8 pb-6 flex items-center">
-            <button id="back-btn" class="mr-4 text-white hover:text-gray-300 transition-colors">
-                <i class="fa-solid fa-chevron-left text-[20px]"></i>
+      <header
+        id="header"
+        class="bg-black text-white px-6 pt-8 pb-6 flex items-center"
+      >
+        <button
+          id="back-btn"
+          class="mr-4 text-white hover:text-gray-300 transition-colors"
+        >
+          <i class="fa-solid fa-chevron-left text-[20px]"></i>
+        </button>
+        <div>
+          <h1 class="text-[28px] font-bold leading-tight mb-1">
+            Clarifying details
+          </h1>
+          <p class="text-[14px] font-light text-gray-300">
+            Help us understand better
+          </p>
+        </div>
+      </header>
+
+      <div id="progress-bar" class="w-full h-[3px] bg-black">
+        <div
+          id="progress-fill"
+          class="h-full bg-white transition-all duration-300"
+          style="width: 75%"
+        ></div>
+      </div>
+
+      <div id="step-indicator" class="px-6 py-4 bg-black">
+        <div class="flex items-center justify-between">
+          <p class="text-white text-[13px] font-medium tracking-wider">
+            STEP 5 OF 6
+          </p>
+          <div class="flex items-center gap-2">
+            <div class="w-2 h-2 bg-white rounded-full"></div>
+            <div class="w-2 h-2 bg-white rounded-full"></div>
+            <div class="w-2 h-2 bg-white rounded-full"></div>
+            <div class="w-2 h-2 bg-white rounded-full"></div>
+            <div class="w-2 h-2 bg-white rounded-full"></div>
+            <div class="w-2 h-2 bg-gray-600 rounded-full"></div>
+          </div>
+        </div>
+      </div>
+
+      <main id="main-content" class="flex-1 px-6 py-6 pb-32 overflow-y-auto">
+        <div
+          id="original-problem"
+          class="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg"
+        >
+          <p
+            class="text-[12px] font-medium tracking-[0.08em] uppercase text-gray-500 mb-2"
+          >
+            Your Description
+          </p>
+          <p class="text-[15px] font-normal text-black leading-relaxed">
+            My car makes a strange grinding noise when I brake, especially at
+            low speeds. It started about a week ago and seems to be getting
+            worse.
+          </p>
+        </div>
+
+        <div id="chat-container" class="space-y-4">
+          <div id="ai-intro" class="flex justify-start">
+            <div
+              class="bg-black text-white px-5 py-4 rounded-2xl rounded-tl-sm max-w-[85%]"
+            >
+              <p class="text-[15px] font-light leading-relaxed">
+                Thanks. Before we send this to your mechanic, can I clarify a
+                couple of things?
+              </p>
+            </div>
+          </div>
+
+          <div id="question-1" class="flex justify-start">
+            <div
+              class="bg-black text-white px-5 py-4 rounded-2xl rounded-tl-sm max-w-[85%]"
+            >
+              <p class="text-[15px] font-light leading-relaxed">
+                When did the issue first start?
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div id="input-container" class="mt-6">
+          <div class="flex gap-2">
+            <input
+              type="text"
+              id="user-response"
+              placeholder="Type your answer..."
+              class="flex-1 px-4 py-4 text-[15px] text-black bg-white border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+            />
+            <button
+              id="send-response-btn"
+              class="px-6 py-4 text-[15px] font-medium text-white bg-black rounded-lg hover:bg-gray-900 transition-colors"
+            >
+              <i class="fa-solid fa-paper-plane"></i>
             </button>
-            <div>
-                <h1 class="text-[28px] font-bold leading-tight mb-1">Clarifying details</h1>
-                <p class="text-[14px] font-light text-gray-300">Help us understand better</p>
-            </div>
-        </header>
-
-        <div id="progress-bar" class="w-full h-[3px] bg-black">
-            <div id="progress-fill" class="h-full bg-white transition-all duration-300" style="width: 75%"></div>
-        </div>
-
-        <div id="step-indicator" class="px-6 py-4 bg-black">
-            <div class="flex items-center justify-between">
-                <p class="text-white text-[13px] font-medium tracking-wider">STEP 5 OF 6</p>
-                <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 bg-white rounded-full"></div>
-                    <div class="w-2 h-2 bg-white rounded-full"></div>
-                    <div class="w-2 h-2 bg-white rounded-full"></div>
-                    <div class="w-2 h-2 bg-white rounded-full"></div>
-                    <div class="w-2 h-2 bg-white rounded-full"></div>
-                    <div class="w-2 h-2 bg-gray-600 rounded-full"></div>
-                </div>
-            </div>
-        </div>
-
-        <main id="main-content" class="flex-1 px-6 py-6 pb-32 overflow-y-auto">
-            
-            <div id="original-problem" class="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                <p class="text-[12px] font-medium tracking-[0.08em] uppercase text-gray-500 mb-2">Your Description</p>
-                <p class="text-[15px] font-normal text-black leading-relaxed">My car makes a strange grinding noise when I brake, especially at low speeds. It started about a week ago and seems to be getting worse.</p>
-            </div>
-
-            <div id="chat-container" class="space-y-4">
-                
-                <div id="ai-intro" class="flex justify-start">
-                    <div class="bg-black text-white px-5 py-4 rounded-2xl rounded-tl-sm max-w-[85%]">
-                        <p class="text-[15px] font-light leading-relaxed">Thanks. Before we send this to your mechanic, can I clarify a couple of things?</p>
-                    </div>
-                </div>
-
-                <div id="question-1" class="flex justify-start">
-                    <div class="bg-black text-white px-5 py-4 rounded-2xl rounded-tl-sm max-w-[85%]">
-                        <p class="text-[15px] font-light leading-relaxed">When did the issue first start?</p>
-                    </div>
-                </div>
-
-            </div>
-
-            <div id="input-container" class="mt-6">
-                <div class="flex gap-2">
-                    <input type="text" id="user-response" placeholder="Type your answer..." class="flex-1 px-4 py-4 text-[15px] text-black bg-white border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-black">
-                    <button id="send-response-btn" class="px-6 py-4 text-[15px] font-medium text-white bg-black rounded-lg hover:bg-gray-900 transition-colors">
-                        <i class="fa-solid fa-paper-plane"></i>
-                    </button>
-                </div>
-                <div class="mt-3 flex items-center justify-between">
-                    <button id="skip-btn" class="text-[13px] font-medium text-gray-500 hover:text-black transition-colors">
-                        Skip this question
-                    </button>
-                    <button id="done-btn" class="text-[13px] font-medium text-gray-500 hover:text-black transition-colors">
-                        I've told you all I know
-                    </button>
-                </div>
-            </div>
-
-            <div id="question-counter" class="mt-6 text-center">
-                <p class="text-[13px] font-medium text-gray-500">Question <span id="current-question">1</span> of <span id="total-questions">3</span></p>
-            </div>
-
-        </main>
-
-        <div id="bottom-action-bar" class="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-black px-6 py-4">
-            <div class="mb-3 text-center">
-                <p class="text-[12px] font-light text-gray-500">AI is asking clarifying questions only</p>
-                <p class="text-[12px] font-light text-gray-500">No diagnosis will be attempted</p>
-            </div>
-            <button id="continue-btn" class="w-full py-5 text-[17px] font-semibold text-white bg-gray-300 rounded-xl cursor-not-allowed" disabled>
-                Continue to photo
+          </div>
+          <div class="mt-3 flex items-center justify-between">
+            <button
+              id="skip-btn"
+              class="text-[13px] font-medium text-gray-500 hover:text-black transition-colors"
+            >
+              Skip this question
             </button>
+            <button
+              id="done-btn"
+              class="text-[13px] font-medium text-gray-500 hover:text-black transition-colors"
+            >
+              I've told you all I know
+            </button>
+          </div>
         </div>
 
+        <div id="question-counter" class="mt-6 text-center">
+          <p class="text-[13px] font-medium text-gray-500">
+            Question <span id="current-question">1</span> of
+            <span id="total-questions">3</span>
+          </p>
+        </div>
+      </main>
+
+      <div
+        id="bottom-action-bar"
+        class="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-black px-6 py-4"
+      >
+        <div class="mb-3 text-center">
+          <p class="text-[12px] font-light text-gray-500">
+            AI is asking clarifying questions only
+          </p>
+          <p class="text-[12px] font-light text-gray-500">
+            No diagnosis will be attempted
+          </p>
+        </div>
+        <button
+          id="continue-btn"
+          class="w-full py-5 text-[17px] font-semibold text-white bg-gray-300 rounded-xl cursor-not-allowed"
+          disabled
+        >
+          Continue to photo
+        </button>
+      </div>
     </div>
 
     <script>
-        window.addEventListener('load', function() {
-            const state = {
-                currentQuestion: 1,
-                totalQuestions: 3,
-                questions: [
-                    "When did the issue first start?",
-                    "Does it only happen when starting, driving, or idling?",
-                    "Are there any dashboard lights on?"
-                ],
-                responses: [],
-                isComplete: false
-            };
+      window.addEventListener("load", function () {
+        const state = {
+          currentQuestion: 1,
+          totalQuestions: 3,
+          questions: [
+            "When did the issue first start?",
+            "Does it only happen when starting, driving, or idling?",
+            "Are there any dashboard lights on?",
+          ],
+          responses: [],
+          isComplete: false,
+        };
 
-            const elements = {
-                chatContainer: document.getElementById('chat-container'),
-                userResponse: document.getElementById('user-response'),
-                sendResponseBtn: document.getElementById('send-response-btn'),
-                skipBtn: document.getElementById('skip-btn'),
-                doneBtn: document.getElementById('done-btn'),
-                continueBtn: document.getElementById('continue-btn'),
-                currentQuestionSpan: document.getElementById('current-question'),
-                totalQuestionsSpan: document.getElementById('total-questions'),
-                backBtn: document.getElementById('back-btn'),
-                inputContainer: document.getElementById('input-container'),
-                questionCounter: document.getElementById('question-counter')
-            };
+        const elements = {
+          chatContainer: document.getElementById("chat-container"),
+          userResponse: document.getElementById("user-response"),
+          sendResponseBtn: document.getElementById("send-response-btn"),
+          skipBtn: document.getElementById("skip-btn"),
+          doneBtn: document.getElementById("done-btn"),
+          continueBtn: document.getElementById("continue-btn"),
+          currentQuestionSpan: document.getElementById("current-question"),
+          totalQuestionsSpan: document.getElementById("total-questions"),
+          backBtn: document.getElementById("back-btn"),
+          inputContainer: document.getElementById("input-container"),
+          questionCounter: document.getElementById("question-counter"),
+        };
 
-            elements.totalQuestionsSpan.textContent = state.totalQuestions;
+        elements.totalQuestionsSpan.textContent = state.totalQuestions;
 
-            function addAIMessage(message) {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'flex justify-start';
-                messageDiv.innerHTML = `
+        function addAIMessage(message) {
+          const messageDiv = document.createElement("div");
+          messageDiv.className = "flex justify-start";
+          messageDiv.innerHTML = `
                     <div class="bg-black text-white px-5 py-4 rounded-2xl rounded-tl-sm max-w-[85%]">
                         <p class="text-[15px] font-light leading-relaxed">${message}</p>
                     </div>
                 `;
-                elements.chatContainer.appendChild(messageDiv);
-                setTimeout(() => {
-                    elements.chatContainer.scrollTop = elements.chatContainer.scrollHeight;
-                }, 100);
-            }
+          elements.chatContainer.appendChild(messageDiv);
+          setTimeout(() => {
+            elements.chatContainer.scrollTop =
+              elements.chatContainer.scrollHeight;
+          }, 100);
+        }
 
-            function addUserMessage(message) {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'flex justify-end';
-                messageDiv.innerHTML = `
+        function addUserMessage(message) {
+          const messageDiv = document.createElement("div");
+          messageDiv.className = "flex justify-end";
+          messageDiv.innerHTML = `
                     <div class="bg-gray-100 text-black px-5 py-4 rounded-2xl rounded-tr-sm max-w-[85%]">
                         <p class="text-[15px] font-normal leading-relaxed">${message}</p>
                     </div>
                 `;
-                elements.chatContainer.appendChild(messageDiv);
-                setTimeout(() => {
-                    elements.chatContainer.scrollTop = elements.chatContainer.scrollHeight;
-                }, 100);
+          elements.chatContainer.appendChild(messageDiv);
+          setTimeout(() => {
+            elements.chatContainer.scrollTop =
+              elements.chatContainer.scrollHeight;
+          }, 100);
+        }
+
+        function askNextQuestion() {
+          if (state.currentQuestion < state.totalQuestions) {
+            setTimeout(() => {
+              addAIMessage(state.questions[state.currentQuestion]);
+              state.currentQuestion++;
+              elements.currentQuestionSpan.textContent = state.currentQuestion;
+              elements.userResponse.disabled = false;
+              elements.sendResponseBtn.disabled = false;
+              elements.userResponse.focus();
+            }, 1000);
+          } else {
+            completeQuestioning();
+          }
+        }
+
+        function completeQuestioning() {
+          setTimeout(() => {
+            addAIMessage(
+              "Thank you. I'll package this clearly for your mechanic.",
+            );
+            state.isComplete = true;
+            elements.inputContainer.classList.add("hidden");
+            elements.questionCounter.classList.add("hidden");
+            elements.continueBtn.disabled = false;
+            elements.continueBtn.classList.remove(
+              "bg-gray-300",
+              "cursor-not-allowed",
+            );
+            elements.continueBtn.classList.add("bg-black", "hover:bg-gray-900");
+          }, 1000);
+        }
+
+        function sendResponse() {
+          const response = elements.userResponse.value.trim();
+          if (response) {
+            addUserMessage(response);
+            state.responses.push(response);
+            elements.userResponse.value = "";
+            elements.userResponse.disabled = true;
+            elements.sendResponseBtn.disabled = true;
+
+            if (
+              response.toLowerCase().includes("all i know") ||
+              response.toLowerCase().includes("told you all")
+            ) {
+              completeQuestioning();
+            } else {
+              askNextQuestion();
             }
+          }
+        }
 
-            function askNextQuestion() {
-                if (state.currentQuestion < state.totalQuestions) {
-                    setTimeout(() => {
-                        addAIMessage(state.questions[state.currentQuestion]);
-                        state.currentQuestion++;
-                        elements.currentQuestionSpan.textContent = state.currentQuestion;
-                        elements.userResponse.disabled = false;
-                        elements.sendResponseBtn.disabled = false;
-                        elements.userResponse.focus();
-                    }, 1000);
-                } else {
-                    completeQuestioning();
-                }
-            }
+        elements.sendResponseBtn.addEventListener("click", sendResponse);
 
-            function completeQuestioning() {
-                setTimeout(() => {
-                    addAIMessage("Thank you. I'll package this clearly for your mechanic.");
-                    state.isComplete = true;
-                    elements.inputContainer.classList.add('hidden');
-                    elements.questionCounter.classList.add('hidden');
-                    elements.continueBtn.disabled = false;
-                    elements.continueBtn.classList.remove('bg-gray-300', 'cursor-not-allowed');
-                    elements.continueBtn.classList.add('bg-black', 'hover:bg-gray-900');
-                }, 1000);
-            }
-
-            function sendResponse() {
-                const response = elements.userResponse.value.trim();
-                if (response) {
-                    addUserMessage(response);
-                    state.responses.push(response);
-                    elements.userResponse.value = '';
-                    elements.userResponse.disabled = true;
-                    elements.sendResponseBtn.disabled = true;
-                    
-                    if (response.toLowerCase().includes('all i know') || response.toLowerCase().includes('told you all')) {
-                        completeQuestioning();
-                    } else {
-                        askNextQuestion();
-                    }
-                }
-            }
-
-            elements.sendResponseBtn.addEventListener('click', sendResponse);
-            
-            elements.userResponse.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    sendResponse();
-                }
-            });
-
-            elements.skipBtn.addEventListener('click', function() {
-                addUserMessage("I'd prefer to skip this");
-                state.responses.push('[Skipped]');
-                elements.userResponse.value = '';
-                elements.userResponse.disabled = true;
-                elements.sendResponseBtn.disabled = true;
-                askNextQuestion();
-            });
-
-            elements.doneBtn.addEventListener('click', function() {
-                addUserMessage("I've told you all I know");
-                completeQuestioning();
-            });
-
-            elements.continueBtn.addEventListener('click', function() {
-                if (state.isComplete) {
-                    window.location.href = '#photo-upload';
-                }
-            });
-
-            elements.backBtn.addEventListener('click', function() {
-                window.history.back();
-            });
-
-            elements.userResponse.focus();
+        elements.userResponse.addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            sendResponse();
+          }
         });
-    </script>
 
-</body>
+        elements.skipBtn.addEventListener("click", function () {
+          addUserMessage("I'd prefer to skip this");
+          state.responses.push("[Skipped]");
+          elements.userResponse.value = "";
+          elements.userResponse.disabled = true;
+          elements.sendResponseBtn.disabled = true;
+          askNextQuestion();
+        });
+
+        elements.doneBtn.addEventListener("click", function () {
+          addUserMessage("I've told you all I know");
+          completeQuestioning();
+        });
+
+        elements.continueBtn.addEventListener("click", function () {
+          if (state.isComplete) {
+            window.location.href = "#photo-upload";
+          }
+        });
+
+        elements.backBtn.addEventListener("click", function () {
+          window.history.back();
+        });
+
+        elements.userResponse.focus();
+      });
+    </script>
+  </body>
 </html>

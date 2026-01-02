@@ -1,276 +1,381 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Postcode Lookup</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>::-webkit-scrollbar { display: none;}</style>
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'sans': ['Inter', 'Helvetica', 'SF Pro', 'system-ui', 'sans-serif']
-                    }
-                }
-            }
-        }
+      window.FontAwesomeConfig = { autoReplaceSvg: "nest" };
     </script>
-</head>
-<body class="bg-white font-sans">
-    
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      ::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "Helvetica", "SF Pro", "system-ui", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-white font-sans">
     <div id="app-container" class="min-h-screen flex flex-col">
-        
-        <header id="header" class="bg-black text-white px-6 pt-8 pb-6">
-            <button id="back-btn" class="mb-4 text-white hover:text-gray-300 transition-colors">
-                <i class="fa-solid fa-arrow-left text-[20px]"></i>
+      <header id="header" class="bg-black text-white px-6 pt-8 pb-6">
+        <button
+          id="back-btn"
+          class="mb-4 text-white hover:text-gray-300 transition-colors"
+        >
+          <i class="fa-solid fa-arrow-left text-[20px]"></i>
+        </button>
+        <h1 class="text-[32px] font-bold leading-tight mb-2">Your location</h1>
+        <p class="text-[15px] font-light text-gray-300">
+          Enter your postcode to find your area.
+        </p>
+      </header>
+
+      <div id="progress-bar" class="w-full h-[3px] bg-black">
+        <div
+          id="progress-fill"
+          class="h-full bg-white transition-all duration-300"
+          style="width: 33%"
+        ></div>
+      </div>
+
+      <div id="step-indicator" class="px-6 py-4 bg-black">
+        <p class="text-white text-[13px] font-medium tracking-wider">
+          STEP 2 OF 6
+        </p>
+      </div>
+
+      <main id="main-content" class="flex-1 px-6 py-8">
+        <section id="postcode-input-section" class="mb-8">
+          <label
+            class="block text-[13px] font-medium tracking-[0.08em] uppercase text-black mb-3"
+            >Postcode</label
+          >
+          <div class="relative">
+            <input
+              type="text"
+              id="postcode-input"
+              placeholder="e.g. BH24 1AA"
+              class="w-full px-5 py-5 pr-14 text-[20px] font-medium text-black bg-white border-2 border-black rounded-xl focus:outline-none focus:ring-2 focus:ring-black uppercase tracking-wider"
+              maxlength="8"
+            />
+            <div
+              id="input-icon"
+              class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400"
+            >
+              <i class="fa-solid fa-location-dot text-[24px]"></i>
+            </div>
+          </div>
+          <p class="mt-3 text-[13px] font-light text-gray-500">
+            We'll use this to find mechanics in your area
+          </p>
+        </section>
+
+        <section id="postcode-result-section" class="hidden">
+          <div class="bg-black text-white rounded-2xl p-6 mb-6">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <p
+                  class="text-[13px] font-medium tracking-[0.08em] uppercase text-gray-400 mb-2"
+                >
+                  Service Area
+                </p>
+                <h2
+                  id="area-name"
+                  class="text-[28px] font-bold leading-tight mb-1"
+                >
+                  Ringwood
+                </h2>
+                <p
+                  id="area-county"
+                  class="text-[17px] font-light text-gray-300"
+                >
+                  Hampshire
+                </p>
+              </div>
+              <button
+                id="change-postcode-btn"
+                class="text-white hover:text-gray-300 transition-colors"
+              >
+                <i class="fa-solid fa-pen text-[18px]"></i>
+              </button>
+            </div>
+
+            <div class="border-t border-gray-700 pt-4">
+              <div class="flex items-center gap-3 mb-3">
+                <div
+                  class="w-10 h-10 bg-white rounded-full flex items-center justify-center"
+                >
+                  <i class="fa-solid fa-check text-black text-[18px]"></i>
+                </div>
+                <p class="text-[15px] font-light">
+                  Mechanics available in your area
+                </p>
+              </div>
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-10 h-10 bg-white rounded-full flex items-center justify-center"
+                >
+                  <i class="fa-solid fa-clock text-black text-[18px]"></i>
+                </div>
+                <p class="text-[15px] font-light">
+                  Average response time: 15 minutes
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div
+            id="coverage-map"
+            class="bg-gray-50 border-2 border-black rounded-2xl h-64 overflow-hidden mb-6 relative"
+          >
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="text-center">
+                <i
+                  class="fa-solid fa-map-location-dot text-[64px] text-black mb-3"
+                ></i>
+                <p class="text-[15px] font-medium text-black">Coverage map</p>
+                <p class="text-[13px] font-light text-gray-500 mt-1">
+                  Full service available
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div
+            id="nearby-areas"
+            class="bg-white border-2 border-gray-200 rounded-2xl p-5"
+          >
+            <p
+              class="text-[13px] font-medium tracking-[0.08em] uppercase text-black mb-4"
+            >
+              Nearby Areas
+            </p>
+            <div class="space-y-3">
+              <div class="flex items-center justify-between py-2">
+                <span class="text-[15px] font-medium text-black"
+                  >Bournemouth</span
+                >
+                <span class="text-[13px] font-light text-gray-500"
+                  >8 miles</span
+                >
+              </div>
+              <div class="border-t border-gray-200"></div>
+              <div class="flex items-center justify-between py-2">
+                <span class="text-[15px] font-medium text-black"
+                  >Southampton</span
+                >
+                <span class="text-[13px] font-light text-gray-500"
+                  >12 miles</span
+                >
+              </div>
+              <div class="border-t border-gray-200"></div>
+              <div class="flex items-center justify-between py-2">
+                <span class="text-[15px] font-medium text-black"
+                  >Christchurch</span
+                >
+                <span class="text-[13px] font-light text-gray-500"
+                  >6 miles</span
+                >
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="error-section" class="hidden">
+          <div
+            class="bg-white border-2 border-black rounded-2xl p-6 text-center"
+          >
+            <div
+              class="w-16 h-16 mx-auto mb-4 border-2 border-black rounded-full flex items-center justify-center"
+            >
+              <i class="fa-solid fa-exclamation text-[32px] text-black"></i>
+            </div>
+            <h3 class="text-[20px] font-bold text-black mb-2">
+              Postcode not found
+            </h3>
+            <p class="text-[15px] font-light text-gray-600 mb-5">
+              Please check your postcode and try again.
+            </p>
+            <button
+              id="retry-btn"
+              class="px-6 py-3 text-[15px] font-medium text-black bg-white border-2 border-black rounded-lg hover:bg-black hover:text-white transition-colors"
+            >
+              Try again
             </button>
-            <h1 class="text-[32px] font-bold leading-tight mb-2">Your location</h1>
-            <p class="text-[15px] font-light text-gray-300">Enter your postcode to find your area.</p>
-        </header>
+          </div>
+        </section>
+      </main>
 
-        <div id="progress-bar" class="w-full h-[3px] bg-black">
-            <div id="progress-fill" class="h-full bg-white transition-all duration-300" style="width: 33%"></div>
-        </div>
-
-        <div id="step-indicator" class="px-6 py-4 bg-black">
-            <p class="text-white text-[13px] font-medium tracking-wider">STEP 2 OF 6</p>
-        </div>
-
-        <main id="main-content" class="flex-1 px-6 py-8">
-            
-            <section id="postcode-input-section" class="mb-8">
-                <label class="block text-[13px] font-medium tracking-[0.08em] uppercase text-black mb-3">Postcode</label>
-                <div class="relative">
-                    <input 
-                        type="text" 
-                        id="postcode-input" 
-                        placeholder="e.g. BH24 1AA" 
-                        class="w-full px-5 py-5 pr-14 text-[20px] font-medium text-black bg-white border-2 border-black rounded-xl focus:outline-none focus:ring-2 focus:ring-black uppercase tracking-wider"
-                        maxlength="8"
-                    >
-                    <div id="input-icon" class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400">
-                        <i class="fa-solid fa-location-dot text-[24px]"></i>
-                    </div>
-                </div>
-                <p class="mt-3 text-[13px] font-light text-gray-500">We'll use this to find mechanics in your area</p>
-            </section>
-
-            <section id="postcode-result-section" class="hidden">
-                <div class="bg-black text-white rounded-2xl p-6 mb-6">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex-1">
-                            <p class="text-[13px] font-medium tracking-[0.08em] uppercase text-gray-400 mb-2">Service Area</p>
-                            <h2 id="area-name" class="text-[28px] font-bold leading-tight mb-1">Ringwood</h2>
-                            <p id="area-county" class="text-[17px] font-light text-gray-300">Hampshire</p>
-                        </div>
-                        <button id="change-postcode-btn" class="text-white hover:text-gray-300 transition-colors">
-                            <i class="fa-solid fa-pen text-[18px]"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="border-t border-gray-700 pt-4">
-                        <div class="flex items-center gap-3 mb-3">
-                            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                                <i class="fa-solid fa-check text-black text-[18px]"></i>
-                            </div>
-                            <p class="text-[15px] font-light">Mechanics available in your area</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                                <i class="fa-solid fa-clock text-black text-[18px]"></i>
-                            </div>
-                            <p class="text-[15px] font-light">Average response time: 15 minutes</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="coverage-map" class="bg-gray-50 border-2 border-black rounded-2xl h-64 overflow-hidden mb-6 relative">
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <div class="text-center">
-                            <i class="fa-solid fa-map-location-dot text-[64px] text-black mb-3"></i>
-                            <p class="text-[15px] font-medium text-black">Coverage map</p>
-                            <p class="text-[13px] font-light text-gray-500 mt-1">Full service available</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="nearby-areas" class="bg-white border-2 border-gray-200 rounded-2xl p-5">
-                    <p class="text-[13px] font-medium tracking-[0.08em] uppercase text-black mb-4">Nearby Areas</p>
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between py-2">
-                            <span class="text-[15px] font-medium text-black">Bournemouth</span>
-                            <span class="text-[13px] font-light text-gray-500">8 miles</span>
-                        </div>
-                        <div class="border-t border-gray-200"></div>
-                        <div class="flex items-center justify-between py-2">
-                            <span class="text-[15px] font-medium text-black">Southampton</span>
-                            <span class="text-[13px] font-light text-gray-500">12 miles</span>
-                        </div>
-                        <div class="border-t border-gray-200"></div>
-                        <div class="flex items-center justify-between py-2">
-                            <span class="text-[15px] font-medium text-black">Christchurch</span>
-                            <span class="text-[13px] font-light text-gray-500">6 miles</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="error-section" class="hidden">
-                <div class="bg-white border-2 border-black rounded-2xl p-6 text-center">
-                    <div class="w-16 h-16 mx-auto mb-4 border-2 border-black rounded-full flex items-center justify-center">
-                        <i class="fa-solid fa-exclamation text-[32px] text-black"></i>
-                    </div>
-                    <h3 class="text-[20px] font-bold text-black mb-2">Postcode not found</h3>
-                    <p class="text-[15px] font-light text-gray-600 mb-5">Please check your postcode and try again.</p>
-                    <button id="retry-btn" class="px-6 py-3 text-[15px] font-medium text-black bg-white border-2 border-black rounded-lg hover:bg-black hover:text-white transition-colors">
-                        Try again
-                    </button>
-                </div>
-            </section>
-
-        </main>
-
-        <div id="bottom-action-bar" class="sticky bottom-0 bg-white border-t-2 border-black px-6 py-4">
-            <button id="lookup-btn" class="w-full py-5 text-[17px] font-semibold text-white bg-black rounded-xl hover:bg-gray-900 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed" disabled>
-                Look up postcode
-            </button>
-            <button id="continue-btn" class="hidden w-full py-5 text-[17px] font-semibold text-white bg-black rounded-xl hover:bg-gray-900 transition-colors">
-                Continue
-            </button>
-        </div>
-
+      <div
+        id="bottom-action-bar"
+        class="sticky bottom-0 bg-white border-t-2 border-black px-6 py-4"
+      >
+        <button
+          id="lookup-btn"
+          class="w-full py-5 text-[17px] font-semibold text-white bg-black rounded-xl hover:bg-gray-900 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+          disabled
+        >
+          Look up postcode
+        </button>
+        <button
+          id="continue-btn"
+          class="hidden w-full py-5 text-[17px] font-semibold text-white bg-black rounded-xl hover:bg-gray-900 transition-colors"
+        >
+          Continue
+        </button>
+      </div>
     </div>
 
     <script>
-        window.addEventListener('load', function() {
-            const elements = {
-                backBtn: document.getElementById('back-btn'),
-                postcodeInput: document.getElementById('postcode-input'),
-                inputIcon: document.getElementById('input-icon'),
-                postcodeInputSection: document.getElementById('postcode-input-section'),
-                postcodeResultSection: document.getElementById('postcode-result-section'),
-                errorSection: document.getElementById('error-section'),
-                areaName: document.getElementById('area-name'),
-                areaCounty: document.getElementById('area-county'),
-                changePostcodeBtn: document.getElementById('change-postcode-btn'),
-                retryBtn: document.getElementById('retry-btn'),
-                lookupBtn: document.getElementById('lookup-btn'),
-                continueBtn: document.getElementById('continue-btn'),
-                progressFill: document.getElementById('progress-fill')
-            };
+      window.addEventListener("load", function () {
+        const elements = {
+          backBtn: document.getElementById("back-btn"),
+          postcodeInput: document.getElementById("postcode-input"),
+          inputIcon: document.getElementById("input-icon"),
+          postcodeInputSection: document.getElementById(
+            "postcode-input-section",
+          ),
+          postcodeResultSection: document.getElementById(
+            "postcode-result-section",
+          ),
+          errorSection: document.getElementById("error-section"),
+          areaName: document.getElementById("area-name"),
+          areaCounty: document.getElementById("area-county"),
+          changePostcodeBtn: document.getElementById("change-postcode-btn"),
+          retryBtn: document.getElementById("retry-btn"),
+          lookupBtn: document.getElementById("lookup-btn"),
+          continueBtn: document.getElementById("continue-btn"),
+          progressFill: document.getElementById("progress-fill"),
+        };
 
-            const postcodeData = {
-                'BH24': { area: 'Ringwood', county: 'Hampshire' },
-                'BH23': { area: 'Christchurch', county: 'Dorset' },
-                'BH1': { area: 'Bournemouth', county: 'Dorset' },
-                'SO15': { area: 'Southampton', county: 'Hampshire' },
-                'SO16': { area: 'Southampton', county: 'Hampshire' },
-                'BH8': { area: 'Bournemouth', county: 'Dorset' },
-                'PO1': { area: 'Portsmouth', county: 'Hampshire' }
-            };
+        const postcodeData = {
+          BH24: { area: "Ringwood", county: "Hampshire" },
+          BH23: { area: "Christchurch", county: "Dorset" },
+          BH1: { area: "Bournemouth", county: "Dorset" },
+          SO15: { area: "Southampton", county: "Hampshire" },
+          SO16: { area: "Southampton", county: "Hampshire" },
+          BH8: { area: "Bournemouth", county: "Dorset" },
+          PO1: { area: "Portsmouth", county: "Hampshire" },
+        };
 
-            function formatPostcode(value) {
-                value = value.toUpperCase().replace(/\s/g, '');
-                if (value.length > 4) {
-                    return value.slice(0, -3) + ' ' + value.slice(-3);
-                }
-                return value;
-            }
+        function formatPostcode(value) {
+          value = value.toUpperCase().replace(/\s/g, "");
+          if (value.length > 4) {
+            return value.slice(0, -3) + " " + value.slice(-3);
+          }
+          return value;
+        }
 
-            elements.postcodeInput.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/[^A-Za-z0-9]/g, '');
-                e.target.value = formatPostcode(value);
-                
-                if (value.length >= 5) {
-                    elements.lookupBtn.disabled = false;
-                    elements.inputIcon.innerHTML = '<i class="fa-solid fa-circle-check text-[24px] text-green-600"></i>';
-                } else {
-                    elements.lookupBtn.disabled = true;
-                    elements.inputIcon.innerHTML = '<i class="fa-solid fa-location-dot text-[24px]"></i>';
-                }
-            });
+        elements.postcodeInput.addEventListener("input", function (e) {
+          let value = e.target.value.replace(/[^A-Za-z0-9]/g, "");
+          e.target.value = formatPostcode(value);
 
-            elements.postcodeInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !elements.lookupBtn.disabled) {
-                    lookupPostcode();
-                }
-            });
-
-            function lookupPostcode() {
-                const postcode = elements.postcodeInput.value.replace(/\s/g, '');
-                const postcodePrefix = postcode.match(/^[A-Z]+\d+/);
-                
-                elements.lookupBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Looking up...';
-                elements.lookupBtn.disabled = true;
-
-                setTimeout(() => {
-                    if (postcodePrefix && postcodeData[postcodePrefix[0]]) {
-                        const data = postcodeData[postcodePrefix[0]];
-                        elements.areaName.textContent = data.area;
-                        elements.areaCounty.textContent = data.county;
-                        
-                        elements.postcodeInputSection.classList.add('hidden');
-                        elements.errorSection.classList.add('hidden');
-                        elements.postcodeResultSection.classList.remove('hidden');
-                        
-                        elements.lookupBtn.classList.add('hidden');
-                        elements.continueBtn.classList.remove('hidden');
-                        
-                        elements.progressFill.style.width = '50%';
-                    } else {
-                        elements.postcodeResultSection.classList.add('hidden');
-                        elements.errorSection.classList.remove('hidden');
-                        elements.lookupBtn.innerHTML = 'Look up postcode';
-                        elements.lookupBtn.disabled = false;
-                    }
-                }, 1500);
-            }
-
-            elements.lookupBtn.addEventListener('click', lookupPostcode);
-
-            elements.changePostcodeBtn.addEventListener('click', function() {
-                elements.postcodeResultSection.classList.add('hidden');
-                elements.errorSection.classList.add('hidden');
-                elements.postcodeInputSection.classList.remove('hidden');
-                
-                elements.continueBtn.classList.add('hidden');
-                elements.lookupBtn.classList.remove('hidden');
-                elements.lookupBtn.innerHTML = 'Look up postcode';
-                
-                elements.postcodeInput.value = '';
-                elements.postcodeInput.focus();
-                elements.lookupBtn.disabled = true;
-                
-                elements.progressFill.style.width = '33%';
-            });
-
-            elements.retryBtn.addEventListener('click', function() {
-                elements.errorSection.classList.add('hidden');
-                elements.postcodeInputSection.classList.remove('hidden');
-                elements.postcodeInput.value = '';
-                elements.postcodeInput.focus();
-                elements.lookupBtn.innerHTML = 'Look up postcode';
-                elements.lookupBtn.disabled = true;
-            });
-
-            elements.continueBtn.addEventListener('click', function() {
-                window.location.href = 'contact.html';
-            });
-
-            elements.backBtn.addEventListener('click', function() {
-                window.history.back();
-            });
-
-            elements.postcodeInput.focus();
+          if (value.length >= 5) {
+            elements.lookupBtn.disabled = false;
+            elements.inputIcon.innerHTML =
+              '<i class="fa-solid fa-circle-check text-[24px] text-green-600"></i>';
+          } else {
+            elements.lookupBtn.disabled = true;
+            elements.inputIcon.innerHTML =
+              '<i class="fa-solid fa-location-dot text-[24px]"></i>';
+          }
         });
-    </script>
 
-</body>
+        elements.postcodeInput.addEventListener("keypress", function (e) {
+          if (e.key === "Enter" && !elements.lookupBtn.disabled) {
+            lookupPostcode();
+          }
+        });
+
+        function lookupPostcode() {
+          const postcode = elements.postcodeInput.value.replace(/\s/g, "");
+          const postcodePrefix = postcode.match(/^[A-Z]+\d+/);
+
+          elements.lookupBtn.innerHTML =
+            '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Looking up...';
+          elements.lookupBtn.disabled = true;
+
+          setTimeout(() => {
+            if (postcodePrefix && postcodeData[postcodePrefix[0]]) {
+              const data = postcodeData[postcodePrefix[0]];
+              elements.areaName.textContent = data.area;
+              elements.areaCounty.textContent = data.county;
+
+              elements.postcodeInputSection.classList.add("hidden");
+              elements.errorSection.classList.add("hidden");
+              elements.postcodeResultSection.classList.remove("hidden");
+
+              elements.lookupBtn.classList.add("hidden");
+              elements.continueBtn.classList.remove("hidden");
+
+              elements.progressFill.style.width = "50%";
+            } else {
+              elements.postcodeResultSection.classList.add("hidden");
+              elements.errorSection.classList.remove("hidden");
+              elements.lookupBtn.innerHTML = "Look up postcode";
+              elements.lookupBtn.disabled = false;
+            }
+          }, 1500);
+        }
+
+        elements.lookupBtn.addEventListener("click", lookupPostcode);
+
+        elements.changePostcodeBtn.addEventListener("click", function () {
+          elements.postcodeResultSection.classList.add("hidden");
+          elements.errorSection.classList.add("hidden");
+          elements.postcodeInputSection.classList.remove("hidden");
+
+          elements.continueBtn.classList.add("hidden");
+          elements.lookupBtn.classList.remove("hidden");
+          elements.lookupBtn.innerHTML = "Look up postcode";
+
+          elements.postcodeInput.value = "";
+          elements.postcodeInput.focus();
+          elements.lookupBtn.disabled = true;
+
+          elements.progressFill.style.width = "33%";
+        });
+
+        elements.retryBtn.addEventListener("click", function () {
+          elements.errorSection.classList.add("hidden");
+          elements.postcodeInputSection.classList.remove("hidden");
+          elements.postcodeInput.value = "";
+          elements.postcodeInput.focus();
+          elements.lookupBtn.innerHTML = "Look up postcode";
+          elements.lookupBtn.disabled = true;
+        });
+
+        elements.continueBtn.addEventListener("click", function () {
+          window.location.href = "contact.html";
+        });
+
+        elements.backBtn.addEventListener("click", function () {
+          window.history.back();
+        });
+
+        elements.postcodeInput.focus();
+      });
+    </script>
+  </body>
 </html>

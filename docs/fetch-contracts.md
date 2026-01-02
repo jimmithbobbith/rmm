@@ -3,17 +3,20 @@
 The booking UI can call the Supabase Edge Functions directly. Each function follows the same CORS pattern and expects `Content-Type: application/json`.
 
 ## `lookup-vehicle`
+
 - **Request**: `{ "reg": string, "postcode"?: string }`
 - **Response**: `{ reg: string; postcode?: string; vehicle?: { make: string; model: string; year: string; fuelType?: string; colour?: string }; source: "dvla" | "stub"; dvlaReady: boolean }
 - **Notes**: Currently returns stub data but the shape is ready for DVLA integration.
 
 ## `ai-clarify`
+
 - **Request**: `{ "notes"?: string, "answers"?: string[] }`
 - **Response**: `{ promptSummary: string; questions: string[]; completed: boolean }`
 - **Notes**: Uses fallback clarifier questions when an AI provider is unavailable and surfaces remaining questions to ask.
 
 ## `submit-job`
-- **Request**: 
+
+- **Request**:
   ```json
   {
     "reg": "AB12 CDE",
