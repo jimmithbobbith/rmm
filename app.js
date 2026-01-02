@@ -184,6 +184,17 @@ function debounce(fn, delay = 400) {
 const debouncePostcodeLookup = debounce(handlePostcodeLookup);
 const debounceVehicleLookup = debounce(handleVehicleLookup);
 
+function setLookupChip(el, text) {
+  if (!el) return;
+  if (text) {
+    el.textContent = text;
+    el.classList.remove("hidden");
+  } else {
+    el.textContent = "";
+    el.classList.add("hidden");
+  }
+}
+
 function handlePostcodeLookup() {
   const postcode = els.postcode.value.trim();
   const postcodeValid = /^[A-Za-z]{1,2}\d[A-Za-z\d]?\s*\d[A-Za-z]{2}$/i.test(
@@ -191,30 +202,25 @@ function handlePostcodeLookup() {
   );
   if (!postcodeValid) {
     state.car.areaLabel = "";
-    els.locationLabel.textContent = "";
-    els.locationLabel.classList.add("hidden");
+    setLookupChip(els.locationLabel, "");
     updateSummaries();
     renderBasketPanels();
     return;
   }
   state.car.postcode = postcode.toUpperCase();
-  els.locationLabel.classList.remove("hidden");
-  els.locationLabel.textContent = "Looking up area…";
+  setLookupChip(els.locationLabel, "Looking up area…");
   fetchAreaLabel(postcode)
     .then((label) => {
       state.car.areaLabel = label;
-      els.locationLabel.textContent = label
-        ? `📍 ${state.car.postcode} • ${label}`
-        : "";
-      els.locationLabel.classList.toggle("hidden", !els.locationLabel.textContent);
+      const labelText = label ? `📍 ${label}` : "";
+      setLookupChip(els.locationLabel, labelText);
       prefillAddressPostcode();
       updateSummaries();
       renderBasketPanels();
     })
     .catch((err) => {
       state.car.areaLabel = "";
-      els.locationLabel.textContent = "";
-      els.locationLabel.classList.add("hidden");
+      setLookupChip(els.locationLabel, "");
       showError("car", err.message);
       updateSummaries();
       renderBasketPanels();
@@ -243,24 +249,27 @@ function handleVehicleLookup() {
   const reg = els.reg.value.trim();
   if (reg.length < 5) {
     state.car.vehicle = null;
-    els.vehicleLabel.textContent = "";
+    setLookupChip(els.vehicleLabel, "");
     updateSummaries();
     renderBasketPanels();
     return;
   }
   state.car.reg = reg.toUpperCase();
-  els.vehicleLabel.textContent = "Searching vehicle…";
+  setLookupChip(els.vehicleLabel, "Searching vehicle…");
   lookupVehicle(reg)
     .then((vehicle) => {
       state.car.vehicle = vehicle;
-      els.vehicleLabel.textContent = `🚗 ${vehicle.make} ${vehicle.model} (${vehicle.year})`;
+      setLookupChip(
+        els.vehicleLabel,
+        `🚗 ${vehicle.make} ${vehicle.model} (${vehicle.year})`,
+      );
       clearError("car");
       updateSummaries();
       renderBasketPanels();
     })
     .catch((err) => {
       state.car.vehicle = null;
-      els.vehicleLabel.textContent = "";
+      setLookupChip(els.vehicleLabel, "");
       showError("car", err.message);
       updateSummaries();
       renderBasketPanels();
@@ -347,13 +356,13 @@ function renderServices() {
       '<p class="section-subtitle">Select a category to see services.</p>';
     return;
   }
-  const category = state.data.categories.find(
-    (c) => c.id === state.selectedCategory,
-  );
+  const category = state.data.categories.find((c) => c.id === state.selectedCategory);
+  const icon = categoryIcons[state.selectedCategory] || "fa-car";
   category.services.forEach((service) => {
     const card = document.createElement("div");
     card.className = "service-card";
     card.innerHTML = `
+      <div class="service-icon"><i class="fa-solid ${icon}" aria-hidden="true"></i></div>
       <div class="service-body">
         <div class="service-header">
           <h4>${service.name}</h4>
@@ -361,14 +370,15 @@ function renderServices() {
         </div>
         <p class="service-description">${service.description}</p>
         ${service.tag ? `<span class="badge">${service.tag}</span>` : ""}
-      </div>
-      <div class="service-actions">
-        <div class="price-stack">
-          <div class="price">£${service.price.toFixed(2)}</div>
-        </div>
-        <div class="service-buttons">
-          <button class="button secondary" data-info="${service.id}">More info</button>
-          <button class="button" data-add="${service.id}">${state.basket.find((b) => b.id === service.id) ? "Added" : "Add"}</button>
+        <div class="service-actions">
+          <div class="price-stack">
+            <div class="price">£${service.price.toFixed(2)}</div>
+            <span class="service-meta">Upfront price</span>
+          </div>
+          <div class="service-buttons">
+            <button class="button secondary" data-info="${service.id}">More info</button>
+            <button class="button" data-add="${service.id}">${state.basket.find((b) => b.id === service.id) ? "Added" : "Add"}</button>
+          </div>
         </div>
       </div>
     `;
@@ -502,7 +512,11 @@ function renderMobileBasket() {
 function updateHeaderTotal() {
   if (!els.headerTotal) return;
   const total = state.basket.reduce((sum, item) => sum + item.price, 0);
-  els.headerTotal.textContent = `Total: £${total.toFixed(2)}`;
+  const hasItems = state.basket.length > 0;
+  els.headerTotal.textContent = hasItems
+    ? `Total: £${total.toFixed(2)}`
+    : "";
+  els.headerTotal.classList.toggle("is-hidden", !hasItems);
 }
 
 function renderDriveableOptions() {
@@ -884,26 +898,29 @@ function updateSummaries() {
     : "—";
   const driveableLabel =
     state.driveable === null ? "Not stated" : state.driveable ? "Yes" : "No";
-  const clarifierSummary = state.clarifier.complete
-    ? state.clarifier.answers
-        .map((ans, idx) => (ans ? `Q${idx + 1}: ${ans}` : ""))
-        .filter(Boolean)
-        .join("<br>") || "No extra details were provided."
-    : "Not run yet.";
-  const notesText = state.notes || "Not provided";
-  els.confirmSummary.innerHTML = `
-    <div><strong>Vehicle:</strong> ${carInfo}</div>
-    <div><strong>Services:</strong><br>${state.basket.map((s) => s.name).join("<br>") || "None selected"}</div>
-    <div><strong>Availability:</strong> ${availabilityLabel}</div>
-    <div><strong>Driveable:</strong> ${driveableLabel}</div>
-    <div><strong>Contact:</strong> ${state.contact.name || "—"} • ${state.contact.phone || "—"}</div>
-    <div><strong>Email:</strong> ${state.contact.email || "Not provided"}</div>
-    <div><strong>Address:</strong> ${contactAddress}</div>
-    <div><strong>Problem description:</strong><br>${notesText}</div>
-    <div><strong>Clarifier:</strong><br>${clarifierSummary}</div>
-    <div class="basket-total" style="margin-top:8px;"><span>Total</span><span>£${total.toFixed(2)}</span></div>
-  `;
-}
+    const clarifierSummary = state.clarifier.complete
+      ? state.clarifier.answers
+          .map((ans, idx) => (ans ? `Q${idx + 1}: ${ans}` : ""))
+          .filter(Boolean)
+          .join("<br>") || "No extra details were provided."
+      : "Not run yet.";
+    const notesText = state.notes || "Not provided";
+    const totalRow = state.basket.length
+      ? `<div class="basket-total" style="margin-top:8px;"><span>Total</span><span>£${total.toFixed(2)}</span></div>`
+      : "";
+    els.confirmSummary.innerHTML = `
+      <div><strong>Vehicle:</strong> ${carInfo}</div>
+      <div><strong>Services:</strong><br>${state.basket.map((s) => s.name).join("<br>") || "None selected"}</div>
+      <div><strong>Availability:</strong> ${availabilityLabel}</div>
+      <div><strong>Driveable:</strong> ${driveableLabel}</div>
+      <div><strong>Contact:</strong> ${state.contact.name || "—"} • ${state.contact.phone || "—"}</div>
+      <div><strong>Email:</strong> ${state.contact.email || "Not provided"}</div>
+      <div><strong>Address:</strong> ${contactAddress}</div>
+      <div><strong>Problem description:</strong><br>${notesText}</div>
+      <div><strong>Clarifier:</strong><br>${clarifierSummary}</div>
+      ${totalRow}
+    `;
+  }
 
 function formatAvailabilityDay(dayString) {
   const date = new Date(dayString);
