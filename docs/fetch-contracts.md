@@ -9,8 +9,9 @@ follows the same CORS pattern and expects `Content-Type: application/json`.
 - **Response**: `{ reg: string; postcode?: string; vehicle?: { make: string;
   model: string; year: string; fuelType?: string; colour?: string }; source:
   "dvla" | "stub"; dvlaReady: boolean }`
-- **Notes**: Currently returns stub data but the shape is ready for DVLA
-  integration.
+- **Notes**: Uses `DVLA_MODE` to decide between returning stubbed data (default)
+  or calling the DVLA test API with the `dvla_api_key_test` vault value. Keys
+  are only read via `Deno.env` and never exposed to the client.
 
 ## `ai-clarify`
 
