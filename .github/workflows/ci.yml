@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   formatting:
@@ -31,4 +32,5 @@ jobs:
       - name: Scan for secrets
         uses: gitleaks/gitleaks-action@v2
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           args: detect --source . --no-banner --redact

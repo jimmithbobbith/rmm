@@ -4,7 +4,8 @@ import twilio from "https://esm.sh/twilio@4.22.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
 };
 
 type ServiceItem = {
@@ -57,14 +58,18 @@ function validatePayload(payload: JobPayload) {
   if (!payload.postcode?.trim()) errors.push("postcode is required");
   if (!payload.contact?.name?.trim()) errors.push("contact.name is required");
   if (!payload.contact?.phone?.trim()) errors.push("contact.phone is required");
-  if (!payload.contact?.addressLine?.trim()) errors.push("contact.addressLine is required");
-  if (!payload.contact?.addressPostcode?.trim()) errors.push("contact.addressPostcode is required");
-  if (!Array.isArray(payload.services)) errors.push("services must be an array");
+  if (!payload.contact?.addressLine?.trim())
+    errors.push("contact.addressLine is required");
+  if (!payload.contact?.addressPostcode?.trim())
+    errors.push("contact.addressPostcode is required");
+  if (!Array.isArray(payload.services))
+    errors.push("services must be an array");
   return errors;
 }
 
 async function sendSms(to: string, body: string) {
-  if (!smsClient || !smsFrom) return { skipped: true, reason: "Twilio not configured" };
+  if (!smsClient || !smsFrom)
+    return { skipped: true, reason: "Twilio not configured" };
   const message = await smsClient.messages.create({ to, from: smsFrom, body });
   return { sid: message.sid, to: message.to };
 }
@@ -78,10 +83,13 @@ serve(async (req) => {
     const payload = (await req.json()) as JobPayload;
     const errors = validatePayload(payload);
     if (errors.length) {
-      return new Response(JSON.stringify({ error: "Invalid payload", details: errors }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({ error: "Invalid payload", details: errors }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
     }
 
     const insertPayload = {

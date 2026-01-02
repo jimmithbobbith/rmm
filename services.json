@@ -204,8 +204,8 @@
     }
   ],
   "mechanics": [
-    {"name": "SC Autocare", "rating": 4.7, "jobs": 313},
-    {"name": "Tarlok Servicing", "rating": 4.9, "jobs": 812},
-    {"name": "Diesels Works", "rating": 4.8, "jobs": 220}
+    { "name": "SC Autocare", "rating": 4.7, "jobs": 313 },
+    { "name": "Tarlok Servicing", "rating": 4.9, "jobs": 812 },
+    { "name": "Diesels Works", "rating": 4.8, "jobs": 220 }
   ]
 }
