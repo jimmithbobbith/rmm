@@ -31,20 +31,45 @@ a {
 }
 
 header.topbar {
-  background: var(--blue);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #000;
   color: #fff;
-  padding: 18px 24px;
+  padding: 16px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .logo {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-weight: 700;
   font-size: 20px;
+}
+
+.logo-mark {
+  height: 42px;
+  width: auto;
+  display: block;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.header-total {
+  font-weight: 800;
+  font-size: 16px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px 14px;
+  border-radius: 999px;
 }
 
 .logo span {
@@ -53,6 +78,7 @@ header.topbar {
 
 .help-link {
   font-weight: 600;
+  color: #fff;
 }
 
 .progress {
@@ -596,7 +622,7 @@ header.topbar {
 }
 
 .basket-mobile {
-  display: none;
+  display: none !important;
   position: fixed;
   bottom: 76px;
   left: 0;
@@ -621,7 +647,7 @@ header.topbar {
     grid-template-columns: 1fr;
   }
   .basket-mobile {
-    display: flex;
+    display: none !important;
   }
 }
 
