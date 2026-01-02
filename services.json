@@ -1,0 +1,211 @@
+{
+  "categories": [
+    {
+      "id": "repairs",
+      "name": "Repairs",
+      "summary": "Know what's wrong? Book the repair you need.",
+      "lead": "Get matched with local mechanics ready to fix your car.",
+      "services": [
+        {
+          "id": "brake-pads",
+          "name": "Brake pads replacement",
+          "price": 165.0,
+          "rating": 4.85,
+          "reviews": 842,
+          "tag": "Popular",
+          "description": "Front brake pads replaced with OEM quality parts. Includes labour and disposal of old pads.",
+          "details": "Your mechanic will inspect the braking system, replace worn pads with quality parts, and road-test the vehicle to confirm safe stopping distances.",
+          "whatToExpect": [
+            "Upfront pricing with parts and labour included",
+            "Mobile fitting at home or work where possible",
+            "Quality checked mechanics with 12-month warranty"
+          ]
+        },
+        {
+          "id": "battery-replace",
+          "name": "Battery replacement",
+          "price": 130.5,
+          "rating": 4.9,
+          "reviews": 621,
+          "tag": "Same-day",
+          "description": "Supply and fit of a like-for-like battery including terminal clean and health check.",
+          "details": "Mechanic will test the charging system, fit a new battery, and dispose of the old unit responsibly.",
+          "whatToExpect": [
+            "Fast call-out available",
+            "Charging system report",
+            "No hidden extras"
+          ]
+        },
+        {
+          "id": "oil-leak",
+          "name": "Oil leak diagnosis",
+          "price": 89.0,
+          "rating": 4.7,
+          "reviews": 403,
+          "description": "Investigation of visible leaks with dye and pressure checks where needed.",
+          "details": "We’ll locate the source of the leak, advise on the repair and provide a fixed-price quote before starting work.",
+          "whatToExpect": [
+            "Leak source report",
+            "Photos for your records",
+            "Friendly guidance from the mechanic"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "diagnostics",
+      "name": "Diagnostics",
+      "summary": "Unsure what's wrong? Let a mechanic identify the problem.",
+      "lead": "In-person inspections with a clear report and quote.",
+      "services": [
+        {
+          "id": "in-person-diagnostic",
+          "name": "Diagnostic inspection",
+          "price": 83.67,
+          "rating": 4.86,
+          "reviews": 4008,
+          "description": "A mechanic inspects your car to find faults and provide a no-obligation quote.",
+          "details": "The mechanic will come out to inspect the car and diagnose the issue. If the fault can be addressed during the visit, the mechanic will provide a fixed price on the spot.",
+          "whatToExpect": [
+            "Clear report with next steps",
+            "No hidden extras",
+            "Diagnostics included in follow-up repair price"
+          ]
+        },
+        {
+          "id": "non-start",
+          "name": "Car won't start inspection",
+          "price": 95.0,
+          "rating": 4.78,
+          "reviews": 2144,
+          "description": "Investigation of non-start issues including battery, starter and fuel checks.",
+          "details": "A mechanic performs battery load tests, starter draw checks, and fuel/ignition assessments to find the root cause.",
+          "whatToExpect": [
+            "Jump start or temporary fix where possible",
+            "Report on the cause",
+            "Quote for parts if needed"
+          ]
+        },
+        {
+          "id": "plugin",
+          "name": "Plug-in diagnostic",
+          "price": 73.5,
+          "rating": 4.81,
+          "reviews": 1290,
+          "description": "Full OBD scan, fault code investigation and freeze-frame analysis.",
+          "details": "Includes fault code reading, live data analysis and guidance on the recommended repair path.",
+          "whatToExpect": [
+            "OBD scan report",
+            "Reset of warning lights if appropriate",
+            "Next steps explained"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "servicing",
+      "name": "Servicing & MOT",
+      "summary": "Keep your vehicle safe and in top condition.",
+      "lead": "Book MOT and servicing with fully qualified mechanics.",
+      "services": [
+        {
+          "id": "full-service",
+          "name": "Full service",
+          "price": 189.99,
+          "rating": 4.93,
+          "reviews": 1890,
+          "description": "Manufacturer-spec full service with oil, filters and safety checks.",
+          "details": "The mechanic follows manufacturer guidelines, replacing consumables and providing a digital checklist.",
+          "whatToExpect": [
+            "OEM spec parts used",
+            "Service book stamped where applicable",
+            "Road test and safety report"
+          ]
+        },
+        {
+          "id": "interim-service",
+          "name": "Interim service",
+          "price": 129.99,
+          "rating": 4.88,
+          "reviews": 1233,
+          "description": "Oil and filter change with 40-point safety inspection.",
+          "details": "Ideal between full services or for high-mileage drivers needing an extra health check.",
+          "whatToExpect": [
+            "Fresh oil and filter",
+            "Fluid top-ups and tyre checks",
+            "Online service record"
+          ]
+        },
+        {
+          "id": "mot",
+          "name": "MOT",
+          "price": 45.0,
+          "rating": 4.76,
+          "reviews": 980,
+          "description": "DVSA-compliant MOT test with collection and drop-off where available.",
+          "details": "Your mechanic arranges the MOT, provides advisory notes and options for fixing any issues.",
+          "whatToExpect": [
+            "Test arranged at approved centre",
+            "Remedial quote if needed",
+            "Friendly reminders for next year"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prepurchase",
+      "name": "Pre-purchase inspections",
+      "summary": "Buying a used car? Have a mechanic check it first.",
+      "lead": "Independent inspections with photographic evidence and clear reporting.",
+      "services": [
+        {
+          "id": "basic-check",
+          "name": "Basic inspection",
+          "price": 119.0,
+          "rating": 4.72,
+          "reviews": 602,
+          "description": "Road test and 50+ point inspection for peace of mind.",
+          "details": "Checks include exterior, interior, fluids, brakes, steering, suspension and a diagnostic scan where possible.",
+          "whatToExpect": [
+            "Written report provided",
+            "Photos of key findings",
+            "Advice on price and negotiation"
+          ]
+        },
+        {
+          "id": "full-check",
+          "name": "Full inspection",
+          "price": 169.0,
+          "rating": 4.85,
+          "reviews": 884,
+          "description": "Comprehensive 100+ point inspection with full diagnostic scan.",
+          "details": "Ideal for higher value cars; includes underbody checks and paint depth readings where accessible.",
+          "whatToExpect": [
+            "Comprehensive checklist",
+            "OBD scan included",
+            "Priority scheduling available"
+          ]
+        },
+        {
+          "id": "ev-check",
+          "name": "Hybrid & EV inspection",
+          "price": 199.0,
+          "rating": 4.7,
+          "reviews": 274,
+          "description": "Battery health insights and high-voltage system checks for electrified vehicles.",
+          "details": "Mechanic performs HV safety checks, battery diagnostics and confirms service history.",
+          "whatToExpect": [
+            "Qualified EV specialists",
+            "Report on battery and range",
+            "Road test included"
+          ]
+        }
+      ]
+    }
+  ],
+  "mechanics": [
+    {"name": "SC Autocare", "rating": 4.7, "jobs": 313},
+    {"name": "Tarlok Servicing", "rating": 4.9, "jobs": 812},
+    {"name": "Diesels Works", "rating": 4.8, "jobs": 220}
+  ]
+}
