@@ -195,8 +195,8 @@ const mockVehicles = [
 
 const categoryIcons = {
   repairs: "fa-screwdriver-wrench",
-  diagnostics: "fa-magnifying-glass-chart",
-  servicing: "fa-clipboard-list",
+  diagnostics: "fa-stethoscope",
+  servicing: "fa-clipboard-check",
   prepurchase: "fa-car-side",
 };
 
