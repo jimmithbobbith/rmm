@@ -77,31 +77,45 @@
               <input id="full-name" placeholder="Sam Example">
             </div>
             <div class="input">
-              <label for="email">Email</label>
+              <label for="email">Email <span class="muted">(optional)</span></label>
               <input id="email" type="email" placeholder="you@example.com">
             </div>
             <div class="input">
-              <label for="phone">Phone</label>
+              <label for="phone">Phone <span class="required">Required</span></label>
               <input id="phone" type="tel" placeholder="07xxx xxxxxx">
             </div>
           </div>
+          <div class="input-row">
+            <div class="input">
+              <label for="address-line">Address</label>
+              <input id="address-line" placeholder="123 Sample Street">
+            </div>
+            <div class="input">
+              <label for="address-postcode">Postcode</label>
+              <input id="address-postcode" placeholder="AB12 3CD">
+            </div>
+          </div>
           <div class="input">
-            <label for="notes">Describe the problem (optional)</label>
+            <label for="notes">Describe the problem</label>
             <textarea id="notes" placeholder="Tell us about noises, smells or warning lights"></textarea>
+          </div>
+          <div class="input clarifier">
+            <div class="clarifier-header">
+              <div>
+                <div class="clarifier-title">AI clarifier</div>
+                <p class="section-subtitle">For diagnostic or vague issues we can ask up to 3 quick questions.</p>
+              </div>
+              <button class="button secondary" id="clarifier-start" type="button">Start clarifier</button>
+            </div>
+            <div id="clarifier-panel" class="clarifier-panel"></div>
+          </div>
+          <div class="input">
+            <label>Is the vehicle driveable?</label>
+            <div class="pills" id="driveable"></div>
           </div>
           <div class="input">
             <label>When is the vehicle available?</label>
-            <div class="pills" id="availability"></div>
-          </div>
-          <div class="input">
-            <label>Preferred time</label>
-            <select id="time-slot">
-              <option value="">Select a time</option>
-              <option>Morning (8am - 11am)</option>
-              <option>Midday (11am - 2pm)</option>
-              <option>Afternoon (2pm - 5pm)</option>
-              <option>Evening (5pm - 7pm)</option>
-            </select>
+            <div id="week-availability" class="week-grid"></div>
           </div>
           <div id="details-error" class="error" aria-live="polite"></div>
         </div>
