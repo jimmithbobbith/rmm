@@ -12,11 +12,18 @@ const state = {
   car: { reg: '', postcode: '', areaLabel: '', vehicle: null },
   selectedCategory: null,
   basket: [],
-  availability: '',
-  timeSlot: '',
+  availability: { day: '', slot: '' },
+  driveable: null,
   notes: '',
-  contact: { name: '', email: '', phone: '' }
+  clarifier: { active: false, complete: false, stopped: false, currentIndex: 0, answers: [] },
+  contact: { name: '', email: '', phone: '', addressLine: '', addressPostcode: '' }
 };
+
+const clarifierQuestions = [
+  'When did the issue first appear?',
+  'Does it happen at specific speeds or temperatures?',
+  'Are there any warning lights or smells accompanying it?'
+];
 
 const els = {};
 
@@ -26,7 +33,9 @@ function init() {
   cacheElements();
   buildProgress();
   attachEvents();
-  populateAvailability();
+  renderDriveableOptions();
+  renderWeekAvailability();
+  renderClarifier();
   fetchServices();
   updateNavigation();
   updateSummaries();
@@ -56,9 +65,13 @@ function cacheElements() {
   els.fullName = document.getElementById('full-name');
   els.email = document.getElementById('email');
   els.phone = document.getElementById('phone');
+  els.addressLine = document.getElementById('address-line');
+  els.addressPostcode = document.getElementById('address-postcode');
   els.notes = document.getElementById('notes');
-  els.availability = document.getElementById('availability');
-  els.timeSlot = document.getElementById('time-slot');
+  els.driveable = document.getElementById('driveable');
+  els.weekAvailability = document.getElementById('week-availability');
+  els.clarifierStart = document.getElementById('clarifier-start');
+  els.clarifierPanel = document.getElementById('clarifier-panel');
   els.confirmSummary = document.getElementById('confirm-summary');
   els.modal = document.getElementById('info-modal');
   els.modalTitle = document.getElementById('modal-title');
@@ -103,8 +116,10 @@ function attachEvents() {
   els.fullName.addEventListener('input', () => clearError('details'));
   els.email.addEventListener('input', () => clearError('details'));
   els.phone.addEventListener('input', () => clearError('details'));
-  els.timeSlot.addEventListener('change', () => clearError('details'));
+  els.addressLine.addEventListener('input', () => clearError('details'));
+  els.addressPostcode.addEventListener('input', () => clearError('details'));
   els.notes.addEventListener('input', () => (state.notes = els.notes.value));
+  els.clarifierStart.addEventListener('click', startClarifier);
   els.modalClose.addEventListener('click', closeModal);
   els.modal.addEventListener('click', (e) => {
     if (e.target === els.modal) closeModal();
@@ -165,6 +180,7 @@ function handlePostcodeLookup() {
     .then((label) => {
       state.car.areaLabel = label;
       els.locationLabel.textContent = label ? `📍 ${label}` : '';
+      prefillAddressPostcode();
       updateSummaries();
       renderBasketPanels();
     })
@@ -218,6 +234,15 @@ function handleVehicleLookup() {
       updateSummaries();
       renderBasketPanels();
     });
+}
+
+function prefillAddressPostcode() {
+  if (!els.addressPostcode || !state.car.postcode) return;
+  const current = els.addressPostcode.value.trim();
+  if (!current) {
+    els.addressPostcode.value = state.car.postcode;
+    state.contact.addressPostcode = state.car.postcode;
+  }
 }
 
 function lookupVehicle(reg) {
@@ -430,24 +455,54 @@ function renderMobileBasket() {
   };
 }
 
-function populateAvailability() {
+function renderDriveableOptions() {
+  if (!els.driveable) return;
+  els.driveable.innerHTML = '';
+  ['Yes', 'No'].forEach((label) => {
+    const value = label === 'Yes';
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'pill';
+    btn.textContent = label;
+    btn.addEventListener('click', () => {
+      state.driveable = value;
+      Array.from(els.driveable.children).forEach((el) => el.classList.remove('active'));
+      btn.classList.add('active');
+      clearError('details');
+      updateSummaries();
+    });
+    els.driveable.appendChild(btn);
+  });
+}
+
+function renderWeekAvailability() {
+  if (!els.weekAvailability) return;
   const today = new Date();
-  els.availability.innerHTML = '';
-  for (let i = 0; i < 5; i++) {
+  els.weekAvailability.innerHTML = '';
+  for (let i = 0; i < 7; i++) {
     const date = new Date(today);
     date.setDate(today.getDate() + i);
-    const label = date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
-    const pill = document.createElement('button');
-    pill.type = 'button';
-    pill.className = 'pill';
-    pill.textContent = label;
-    pill.addEventListener('click', () => {
-      state.availability = label;
-      Array.from(els.availability.children).forEach((el) => el.classList.remove('active'));
-      pill.classList.add('active');
-      clearError('details');
+    const dayLabel = date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+    const column = document.createElement('div');
+    column.className = 'day-column';
+    column.innerHTML = `<div class="day-label">${dayLabel}</div>`;
+    ['Morning', 'Afternoon', 'Evening'].forEach((slot) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'slot-pill';
+      const label = `${slot} window`;
+      button.textContent = label;
+      const isActive = state.availability.day === date.toDateString() && state.availability.slot === label;
+      if (isActive) button.classList.add('active');
+      button.addEventListener('click', () => {
+        state.availability = { day: date.toDateString(), slot: label };
+        renderWeekAvailability();
+        clearError('details');
+        updateSummaries();
+      });
+      column.appendChild(button);
     });
-    els.availability.appendChild(pill);
+    els.weekAvailability.appendChild(column);
   }
 }
 
@@ -469,10 +524,93 @@ function onNext() {
   showStep();
 }
 
+function startClarifier() {
+  state.clarifier = { active: true, complete: false, stopped: false, currentIndex: 0, answers: [] };
+  renderClarifier();
+}
+
+function handleClarifierAnswer() {
+  const input = document.getElementById('clarifier-input');
+  if (!input) return;
+  const value = input.value.trim();
+  if (!value) return;
+  state.clarifier.answers[state.clarifier.currentIndex] = value;
+  state.clarifier.currentIndex += 1;
+  if (state.clarifier.currentIndex >= clarifierQuestions.length) {
+    state.clarifier.complete = true;
+  }
+  renderClarifier();
+  updateSummaries();
+}
+
+function stopClarifier() {
+  state.clarifier.stopped = true;
+  state.clarifier.complete = true;
+  renderClarifier();
+  updateSummaries();
+}
+
+function renderClarifier() {
+  if (!els.clarifierPanel) return;
+  if (els.clarifierStart) {
+    els.clarifierStart.textContent = state.clarifier.active ? 'Restart clarifier' : 'Start clarifier';
+  }
+  els.clarifierPanel.innerHTML = '';
+  const { active, complete, currentIndex, answers, stopped } = state.clarifier;
+
+  if (!active) {
+    const hint = document.createElement('p');
+    hint.className = 'service-meta';
+    hint.textContent = 'We will tailor questions to describe symptoms for the mechanic.';
+    els.clarifierPanel.appendChild(hint);
+    return;
+  }
+
+  if (complete) {
+    const summary = document.createElement('div');
+    summary.className = 'summary-box';
+    const items = answers
+      .map((ans, idx) => (ans ? `<li><strong>Q${idx + 1}:</strong> ${clarifierQuestions[idx]}<br>${ans}</li>` : ''))
+      .filter(Boolean)
+      .join('');
+    summary.innerHTML = `
+      <strong>Clarifier summary</strong>
+      <p class="service-meta">Neutral description to share with the mechanic.</p>
+      <ul class="clarifier-summary">${items || '<li>No extra details were provided.</li>'}</ul>
+      ${stopped ? '<div class="service-meta">Customer stopped: "I\'ve told you all I know".</div>' : ''}
+    `;
+    els.clarifierPanel.appendChild(summary);
+    return;
+  }
+
+  const question = document.createElement('div');
+  question.className = 'clarifier-question';
+  question.innerHTML = `
+    <div class="clarifier-progress">Question ${currentIndex + 1} of ${clarifierQuestions.length}</div>
+    <div class="clarifier-text">${clarifierQuestions[currentIndex]}</div>
+    <textarea id="clarifier-input" placeholder="Add a brief note"></textarea>
+    <div class="clarifier-actions">
+      <button class="button" type="button" id="clarifier-next">${currentIndex === clarifierQuestions.length - 1 ? 'Finish' : 'Next question'}</button>
+      <button class="button secondary" type="button" id="clarifier-stop">I've told you all I know</button>
+    </div>
+  `;
+  els.clarifierPanel.appendChild(question);
+  const input = document.getElementById('clarifier-input');
+  input.value = answers[currentIndex] || '';
+  document.getElementById('clarifier-next').addEventListener('click', handleClarifierAnswer);
+  document.getElementById('clarifier-stop').addEventListener('click', stopClarifier);
+}
+
 function showStep() {
   els.panes.forEach((pane, idx) => {
     pane.classList.toggle('active', idx === state.currentStep);
   });
+  if (steps[state.currentStep].id === 'details') {
+    prefillAddressPostcode();
+    renderDriveableOptions();
+    renderWeekAvailability();
+    renderClarifier();
+  }
   updateNavigation();
   updateProgress();
   updateSummaries();
@@ -520,6 +658,7 @@ function validateCar() {
     return false;
   }
   state.car = { ...state.car, reg: reg.toUpperCase(), postcode: postcode.toUpperCase() };
+  prefillAddressPostcode();
   updateSummaries();
   renderBasketPanels();
   return true;
@@ -529,18 +668,24 @@ function validateDetails() {
   state.contact = {
     name: els.fullName.value.trim(),
     email: els.email.value.trim(),
-    phone: els.phone.value.trim()
+    phone: els.phone.value.trim(),
+    addressLine: els.addressLine.value.trim(),
+    addressPostcode: els.addressPostcode.value.trim().toUpperCase()
   };
-  state.timeSlot = els.timeSlot.value;
   state.notes = els.notes.value.trim();
 
-  const validEmail = /.+@.+\..+/.test(state.contact.email);
-  if (!state.contact.name || !validEmail || state.contact.phone.length < 6) {
-    showError('details', 'Please add your name, a valid email and phone number.');
+  const validEmail = !state.contact.email || /.+@.+\..+/.test(state.contact.email);
+  const postcodeValid = /^[A-Za-z]{1,2}\d[A-Za-z\d]?\s*\d[A-Za-z]{2}$/i.test(state.contact.addressPostcode);
+  if (!state.contact.name || !validEmail || state.contact.phone.length < 6 || !state.contact.addressLine || !postcodeValid) {
+    showError('details', 'Please add your name, phone and address with a valid postcode. Email is optional.');
     return false;
   }
-  if (!state.availability || !state.timeSlot) {
-    showError('details', 'Select when your vehicle is available.');
+  if (!state.availability.day || !state.availability.slot) {
+    showError('details', 'Select an availability slot for the week.');
+    return false;
+  }
+  if (state.driveable === null) {
+    showError('details', 'Tell us if the vehicle is driveable.');
     return false;
   }
   updateSummaries();
@@ -590,13 +735,44 @@ function updateSummaries() {
     els.detailsSummary.innerHTML += `<div class="service-meta">${list}</div>`;
   }
 
+  const availabilityText = state.availability.day
+    ? `${state.availability.slot} on ${state.availability.day}`
+    : 'Availability not set';
+  const driveableText = state.driveable === null ? 'Driveable status not provided' : state.driveable ? 'Vehicle can be driven' : 'Vehicle not driveable';
+  const addressText = state.contact.addressLine
+    ? `${state.contact.addressLine} (${state.contact.addressPostcode || 'postcode needed'})`
+    : 'Address pending';
+  const clarifierText = state.clarifier.complete
+    ? 'Clarifier summary ready to share.'
+    : 'Clarifier not completed yet.';
+  els.detailsSummary.innerHTML += `<div class="service-meta">${availabilityText}<br>${driveableText}<br>${addressText}<br>${clarifierText}</div>`;
+
   const total = state.basket.reduce((sum, item) => sum + item.price, 0);
   const carInfo = carLines.join(' • ') || 'Vehicle pending';
+  const availabilityLabel = state.availability.day
+    ? `${state.availability.day} • ${state.availability.slot}`
+    : 'Not provided';
+  const contactAddress = state.contact.addressLine
+    ? `${state.contact.addressLine} • ${state.contact.addressPostcode || ''}`
+    : '—';
+  const driveableLabel = state.driveable === null ? 'Not stated' : state.driveable ? 'Yes' : 'No';
+  const clarifierSummary = state.clarifier.complete
+    ? state.clarifier.answers
+        .map((ans, idx) => (ans ? `Q${idx + 1}: ${ans}` : ''))
+        .filter(Boolean)
+        .join('<br>') || 'No extra details were provided.'
+    : 'Not run yet.';
+  const notesText = state.notes || 'Not provided';
   els.confirmSummary.innerHTML = `
     <div><strong>Vehicle:</strong> ${carInfo}</div>
     <div><strong>Services:</strong><br>${state.basket.map((s) => s.name).join('<br>') || 'None selected'}</div>
-    <div><strong>Availability:</strong> ${state.availability || 'Not provided'} • ${state.timeSlot || ''}</div>
-    <div><strong>Contact:</strong> ${state.contact.name || '—'} • ${state.contact.email || '—'} • ${state.contact.phone || '—'}</div>
+    <div><strong>Availability:</strong> ${availabilityLabel}</div>
+    <div><strong>Driveable:</strong> ${driveableLabel}</div>
+    <div><strong>Contact:</strong> ${state.contact.name || '—'} • ${state.contact.phone || '—'}</div>
+    <div><strong>Email:</strong> ${state.contact.email || 'Not provided'}</div>
+    <div><strong>Address:</strong> ${contactAddress}</div>
+    <div><strong>Problem description:</strong><br>${notesText}</div>
+    <div><strong>Clarifier:</strong><br>${clarifierSummary}</div>
     <div class="basket-total" style="margin-top:8px;"><span>Total</span><span>£${total.toFixed(2)}</span></div>
   `;
 }

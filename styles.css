@@ -113,6 +113,8 @@ header.topbar {
 }
 
 .section-subtitle { color: var(--muted); margin: 0 0 18px; }
+.muted { color: var(--muted); font-weight: 500; }
+.required { color: #dc2626; font-size: 13px; font-weight: 700; margin-left: 6px; }
 
 .input-row {
   display: grid;
@@ -321,6 +323,55 @@ header.topbar {
 }
 
 .pill.active { border-color: var(--blue); background: #e0f2fe; color: var(--dark); }
+
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.day-column {
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.day-label { font-weight: 700; }
+
+.slot-pill {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #f8fafc;
+  cursor: pointer;
+  text-align: left;
+}
+
+.slot-pill.active {
+  border-color: var(--blue);
+  background: #e0f2fe;
+  color: var(--dark);
+}
+
+.clarifier {
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  background: #f8fafc;
+}
+
+.clarifier-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.clarifier-title { font-weight: 700; }
+
+.clarifier-panel textarea { width: 100%; border-radius: 10px; border: 1px solid var(--border); padding: 12px; min-height: 90px; }
+.clarifier-question { display: grid; gap: 8px; }
+.clarifier-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.clarifier-progress { font-weight: 700; color: var(--blue); }
+.clarifier-summary { padding-left: 18px; }
 
 .summary-box {
   border: 1px dashed var(--border);
