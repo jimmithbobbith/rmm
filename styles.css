@@ -30,6 +30,7 @@ body {
     sans-serif;
   background: var(--background);
   color: var(--ink);
+  overflow-x: hidden;
 }
 
 a {
