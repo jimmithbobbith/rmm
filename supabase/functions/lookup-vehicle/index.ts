@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.192.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.42.7";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -25,21 +26,39 @@ type LookupResponse = {
   dvlaReady: boolean;
 };
 
-const dvlaMode = (Deno.env.get("DVLA_MODE") ?? "stub").toLowerCase();
-const dvlaApiKey = Deno.env.get("dvla_api_key_test");
+const supabaseUrl = Deno.env.get("SUPABASE_URL");
+const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+const supabase = supabaseUrl && supabaseServiceRoleKey
+  ? createClient(supabaseUrl, supabaseServiceRoleKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  })
+  : null;
 
-async function lookupFromDvla(reg: string, postcode?: string): Promise<LookupResponse> {
-  if (!dvlaApiKey) {
-    throw new Error("DVLA test API key is not configured");
+async function getDvlaApiKey(): Promise<{ key: string | null; ready: boolean }> {
+  if (!supabase) return { key: null, ready: false };
+
+  const { data, error } = await supabase.vault.getSecret("dvla_api_key_test");
+  if (error) {
+    console.error("Failed to load DVLA API key from Vault", error);
+    return { key: null, ready: false };
   }
 
+  return { key: data?.secret ?? null, ready: Boolean(data?.secret) };
+}
+
+async function lookupFromDvla(
+  reg: string,
+  postcode: string | undefined,
+  apiKey: string,
+): Promise<LookupResponse> {
+  
   const response = await fetch(
     "https://driver-vehicle-licensing.api.gov.uk/vehicle-enquiry/v1/vehicles",
     {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": dvlaApiKey,
+        "x-api-key": apiKey,
       },
       body: JSON.stringify({ registrationNumber: reg }),
     },
@@ -63,7 +82,7 @@ async function lookupFromDvla(reg: string, postcode?: string): Promise<LookupRes
       colour: vehicle.colour,
     },
     source: "dvla",
-    dvlaReady: Boolean(dvlaApiKey),
+    dvlaReady: true,
   };
 }
 
@@ -86,22 +105,20 @@ serve(async (req) => {
       );
     }
 
-    const useDvla = dvlaMode === "test";
+    const { key: dvlaApiKey, ready: dvlaReady } = await getDvlaApiKey();
 
-    const responseBody = useDvla
-      ? await lookupFromDvla(reg, body.postcode)
+    const responseBody = dvlaApiKey
+      ? await lookupFromDvla(reg, body.postcode, dvlaApiKey)
       : {
         reg,
         postcode: body.postcode,
         vehicle: {
-          make: "TBD",
-          model: "TBD",
-          year: "TBD",
-          fuelType: "unknown",
-          colour: "unknown",
+          make: "Unavailable",
+          model: "Unavailable",
+          year: "Unavailable",
         },
         source: "stub" as const,
-        dvlaReady: true,
+        dvlaReady,
       } satisfies LookupResponse;
 
     return new Response(JSON.stringify(responseBody), {
