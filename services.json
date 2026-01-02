@@ -4,7 +4,7 @@
       "id": "repairs",
       "name": "Repairs",
       "summary": "Know what's wrong? Book the repair you need.",
-      "lead": "Get matched with local mechanics ready to fix your car.",
+      "lead": "Tell us what you need and we'll line up the right help.",
       "services": [
         {
           "id": "brake-pads",
