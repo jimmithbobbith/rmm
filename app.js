@@ -8,6 +8,7 @@ const steps = [
 const state = {
   currentStep: 0,
   data: null,
+  lookupMode: "dvla",
   car: { reg: "", postcode: "", areaLabel: "", vehicle: null },
   selectedCategory: null,
   basket: [],
@@ -38,12 +39,26 @@ const clarifierQuestions = [
 
 const els = {};
 
+const functionsBaseUrl = getFunctionsBaseUrl();
+
+function getFunctionsBaseUrl() {
+  const meta = document.querySelector('meta[name="functions-url"]');
+  const candidate =
+    (typeof window !== "undefined" && window.FUNCTIONS_URL) ||
+    meta?.content ||
+    (document.body?.dataset.functionsUrl ?? "") ||
+    localStorage.getItem("functionsUrl") ||
+    "";
+  return candidate.trim().replace(/\/$/, "");
+}
+
 document.addEventListener("DOMContentLoaded", init);
 
 function init() {
   cacheElements();
   buildProgress();
   attachEvents();
+  updateLookupModeUI();
   renderDriveableOptions();
   renderWeekAvailability();
   renderClarifier();
@@ -91,6 +106,7 @@ function cacheElements() {
   els.modalList = document.getElementById("modal-list");
   els.modalAdd = document.getElementById("modal-add");
   els.modalClose = document.querySelector(".modal-close");
+  els.lookupMode = document.getElementById("lookup-mode");
 }
 
 function buildProgress() {
@@ -144,6 +160,7 @@ function attachEvents() {
       closeModal();
     }
   });
+  els.lookupMode?.addEventListener("click", handleLookupModeClick);
 }
 
 function fetchServices() {
@@ -192,6 +209,41 @@ function setLookupChip(el, text) {
   } else {
     el.textContent = "";
     el.classList.add("hidden");
+  }
+}
+
+function handleLookupModeClick(event) {
+  const button = event.target.closest("[data-mode]");
+  if (!button) return;
+  setLookupMode(button.dataset.mode);
+}
+
+function setLookupMode(mode) {
+  const nextMode = mode === "test" ? "test" : "dvla";
+  if (state.lookupMode === nextMode) return;
+  state.lookupMode = nextMode;
+  state.car.vehicle = null;
+  setLookupChip(els.vehicleLabel, "");
+  updateLookupModeUI();
+  if (els.reg.value.trim().length >= 5) {
+    handleVehicleLookup();
+  }
+}
+
+function updateLookupModeUI() {
+  if (!els.lookupMode) return;
+  const buttons = els.lookupMode.querySelectorAll("[data-mode]");
+  buttons.forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.mode === state.lookupMode);
+  });
+  const title = els.lookupMode.closest(".lookup-mode")?.querySelector(
+    ".lookup-mode-title",
+  );
+  if (title) {
+    title.textContent =
+      state.lookupMode === "dvla"
+        ? "Vehicle lookup (DVLA default)"
+        : "Vehicle lookup (Test car)";
   }
 }
 
@@ -259,9 +311,11 @@ function handleVehicleLookup() {
   lookupVehicle(reg)
     .then((vehicle) => {
       state.car.vehicle = vehicle;
+      const sourceLabel =
+        vehicle.source === "dvla" ? "DVLA lookup" : "Test vehicle";
       setLookupChip(
         els.vehicleLabel,
-        `🚗 ${vehicle.make} ${vehicle.model} (${vehicle.year})`,
+        `🚗 ${vehicle.make} ${vehicle.model} (${vehicle.year}) • ${sourceLabel}`,
       );
       clearError("car");
       updateSummaries();
@@ -286,6 +340,12 @@ function prefillAddressPostcode() {
 }
 
 function lookupVehicle(reg) {
+  return state.lookupMode === "test"
+    ? lookupVehicleStub(reg)
+    : lookupVehicleFromApi(reg);
+}
+
+function lookupVehicleStub(reg) {
   return new Promise((resolve, reject) => {
     const clean = reg.replace(/\s+/g, "").toUpperCase();
     if (clean.length < 5) {
@@ -299,8 +359,45 @@ function lookupVehicle(reg) {
       model: "Hatchback",
       year: fallbackYear,
     };
-    setTimeout(() => resolve({ ...payload, reg: clean }), 250);
+    setTimeout(() => resolve({ ...payload, reg: clean, source: "stub" }), 250);
   });
+}
+
+async function lookupVehicleFromApi(reg) {
+  const clean = reg.replace(/\s+/g, "").toUpperCase();
+  if (!functionsBaseUrl) {
+    throw new Error(
+      "Vehicle lookup unavailable: add a Supabase functions URL or switch to the test car mode.",
+    );
+  }
+
+  const response = await fetch(`${functionsBaseUrl}/lookup-vehicle`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ reg: clean, postcode: state.car.postcode || undefined }),
+  });
+
+  if (!response.ok) {
+    let message = "Vehicle lookup failed.";
+    try {
+      const errorBody = await response.json();
+      if (typeof errorBody?.error === "string") {
+        message = errorBody.error;
+      }
+    } catch (_) {
+      // ignore parse errors
+    }
+    throw new Error(message);
+  }
+
+  const data = await response.json();
+  if (!data?.vehicle) throw new Error("Vehicle details not found for that registration.");
+
+  return {
+    ...data.vehicle,
+    reg: data.reg || clean,
+    source: data.source || "dvla",
+  };
 }
 
 function renderCategories() {

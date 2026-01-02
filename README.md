@@ -1,4 +1,4 @@
-# ClickMechanic booking prototype
+# Ringwood Mobile Mechanics booking prototype
 
 This repo is a static booking flow that can be deployed to any static host
 (including GitHub Pages). Supabase Edge Functions back the booking submission
