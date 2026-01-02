@@ -1,9 +1,8 @@
 const steps = [
   { id: "car", label: "Car" },
   { id: "category", label: "Select work" },
-  { id: "services", label: "Services" },
   { id: "details", label: "Details" },
-  { id: "confirm", label: "Confirm" },
+  { id: "confirm", label: "Book" },
 ];
 
 const state = {
@@ -694,8 +693,6 @@ function validateStep() {
         showError("category", "Select a category to continue.");
         return false;
       }
-      return true;
-    case "services":
       if (!state.basket.length) {
         showError("services", "Add at least one service to your basket.");
         return false;
