@@ -41,6 +41,11 @@ const els = {};
 
 const functionsBaseUrl = getFunctionsBaseUrl();
 
+function ensureLookupModeAvailable() {
+  if (functionsBaseUrl || state.lookupMode === "test") return;
+  state.lookupMode = "test";
+}
+
 function getFunctionsBaseUrl() {
   const meta = document.querySelector('meta[name="functions-url"]');
   const candidate =
@@ -58,6 +63,7 @@ function init() {
   cacheElements();
   buildProgress();
   attachEvents();
+  ensureLookupModeAvailable();
   updateLookupModeUI();
   renderDriveableOptions();
   renderWeekAvailability();
@@ -220,6 +226,15 @@ function handleLookupModeClick(event) {
 
 function setLookupMode(mode) {
   const nextMode = mode === "test" ? "test" : "dvla";
+  if (nextMode === "dvla" && !functionsBaseUrl) {
+    showError(
+      "car",
+      "Vehicle lookup unavailable: add a Supabase functions URL or switch to the test car mode.",
+    );
+    state.lookupMode = "test";
+    updateLookupModeUI();
+    return;
+  }
   if (state.lookupMode === nextMode) return;
   state.lookupMode = nextMode;
   state.car.vehicle = null;
@@ -235,6 +250,12 @@ function updateLookupModeUI() {
   const buttons = els.lookupMode.querySelectorAll("[data-mode]");
   buttons.forEach((btn) => {
     btn.classList.toggle("active", btn.dataset.mode === state.lookupMode);
+    const isDvla = btn.dataset.mode === "dvla";
+    const dvlaUnavailable = isDvla && !functionsBaseUrl;
+    btn.disabled = dvlaUnavailable;
+    btn.title = dvlaUnavailable
+      ? "Add a Supabase functions URL to use DVLA lookup. Using the test car instead."
+      : "";
   });
   const title = els.lookupMode.closest(".lookup-mode")?.querySelector(
     ".lookup-mode-title",
@@ -244,6 +265,14 @@ function updateLookupModeUI() {
       state.lookupMode === "dvla"
         ? "Vehicle lookup (DVLA default)"
         : "Vehicle lookup (Test car)";
+  }
+  const subtitle = els.lookupMode.closest(".lookup-mode")?.querySelector(
+    ".section-subtitle",
+  );
+  if (subtitle) {
+    subtitle.textContent = !functionsBaseUrl
+      ? "DVLA lookup requires a Supabase functions URL. Using the built-in test car until it is configured."
+      : "Use the DVLA checker or switch to a built-in test vehicle.";
   }
 }
 
