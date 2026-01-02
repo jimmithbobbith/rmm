@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ClickMechanic admin</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script
+      defer
+      src="https://kit.fontawesome.com/6a1595cfe8.js"
+      crossorigin="anonymous"
+    ></script>
+    <script defer src="admin.js"></script>
+  </head>
+  <body class="admin-body">
+    <header class="topbar">
+      <div class="logo">
+        <i class="fa-solid fa-map-location-dot"></i><span>ClickMechanic Admin</span>
+      </div>
+    </header>
+
+    <main class="admin-main">
+      <div class="card admin-card">
+        <h1 class="section-title">Admin jobs console</h1>
+        <p class="section-subtitle">
+          Configure your Supabase functions URL and admin token to review and update
+          bookings. Details are stored locally in your browser only.
+        </p>
+
+        <form id="admin-config" class="admin-form">
+          <label class="input">
+            <span>Supabase functions URL</span>
+            <input
+              id="functions-url"
+              type="url"
+              placeholder="https://<project>.functions.supabase.co"
+              required
+            />
+          </label>
+          <label class="input">
+            <span>Admin API token</span>
+            <input
+              id="admin-token"
+              type="password"
+              autocomplete="current-password"
+              required
+            />
+          </label>
+          <div class="admin-actions">
+            <button class="button" type="submit">Save & load jobs</button>
+            <button class="button secondary" type="button" id="admin-logout">
+              Clear session
+            </button>
+          </div>
+        </form>
+
+        <div id="admin-status" class="admin-status" aria-live="polite"></div>
+
+        <div id="admin-table" class="admin-table" hidden>
+          <div class="admin-table-header">
+            <div>Reg</div>
+            <div>Contact</div>
+            <div>Services</div>
+            <div>Status</div>
+            <div>Created</div>
+            <div>Actions</div>
+          </div>
+          <div id="admin-rows"></div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
