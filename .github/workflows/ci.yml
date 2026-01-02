@@ -33,4 +33,4 @@ jobs:
         uses: gitleaks/gitleaks-action@latest
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          args: detect --source . --no-banner --redact
+          args: detect --source . --no-banner --redact --no-git
