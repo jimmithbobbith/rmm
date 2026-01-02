@@ -121,6 +121,23 @@ header.topbar {
   margin-bottom: 12px;
 }
 
+.lookup-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 8px;
+  min-height: 28px;
+}
+
+.lookup-chip {
+  background: #eef2ff;
+  border: 1px solid #e0e7ff;
+  border-radius: 20px;
+  padding: 6px 10px;
+  font-size: 13px;
+  color: #4338ca;
+}
+
 .input label {
   display: block;
   font-weight: 600;

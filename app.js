@@ -9,7 +9,7 @@ const steps = [
 const state = {
   currentStep: 0,
   data: null,
-  car: { reg: '', postcode: '' },
+  car: { reg: '', postcode: '', areaLabel: '', vehicle: null },
   selectedCategory: null,
   basket: [],
   availability: '',
@@ -41,6 +41,8 @@ function cacheElements() {
   els.postcode = document.getElementById('postcode');
   els.carError = document.getElementById('car-error');
   els.carSummary = document.getElementById('car-summary');
+  els.locationLabel = document.getElementById('location-label');
+  els.vehicleLabel = document.getElementById('vehicle-label');
   els.categoryGrid = document.getElementById('category-grid');
   els.categoryHeader = document.getElementById('category-header');
   els.categoryError = document.getElementById('category-error');
@@ -90,8 +92,14 @@ function updateProgress() {
 function attachEvents() {
   els.back.addEventListener('click', onBack);
   els.next.addEventListener('click', onNext);
-  els.reg.addEventListener('input', () => clearError('car'));
-  els.postcode.addEventListener('input', () => clearError('car'));
+  els.reg.addEventListener('input', () => {
+    clearError('car');
+    debounceVehicleLookup();
+  });
+  els.postcode.addEventListener('input', () => {
+    clearError('car');
+    debouncePostcodeLookup();
+  });
   els.fullName.addEventListener('input', () => clearError('details'));
   els.email.addEventListener('input', () => clearError('details'));
   els.phone.addEventListener('input', () => clearError('details'));
@@ -122,6 +130,108 @@ function fetchServices() {
     .catch(() => {
       els.categoryGrid.innerHTML = '<p class="error">Unable to load services right now.</p>';
     });
+}
+
+const mockVehicles = [
+  { pattern: /^AB/, make: 'Ford', model: 'Fiesta', year: 2018 },
+  { pattern: /^CD/, make: 'Volkswagen', model: 'Golf', year: 2020 },
+  { pattern: /^EF/, make: 'Vauxhall', model: 'Corsa', year: 2017 }
+];
+
+function debounce(fn, delay = 400) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+}
+
+const debouncePostcodeLookup = debounce(handlePostcodeLookup);
+const debounceVehicleLookup = debounce(handleVehicleLookup);
+
+function handlePostcodeLookup() {
+  const postcode = els.postcode.value.trim();
+  const postcodeValid = /^[A-Za-z]{1,2}\d[A-Za-z\d]?\s*\d[A-Za-z]{2}$/i.test(postcode);
+  if (!postcodeValid) {
+    state.car.areaLabel = '';
+    els.locationLabel.textContent = '';
+    updateSummaries();
+    renderBasketPanels();
+    return;
+  }
+  state.car.postcode = postcode.toUpperCase();
+  els.locationLabel.textContent = 'Looking up area…';
+  fetchAreaLabel(postcode)
+    .then((label) => {
+      state.car.areaLabel = label;
+      els.locationLabel.textContent = label ? `📍 ${label}` : '';
+      updateSummaries();
+      renderBasketPanels();
+    })
+    .catch((err) => {
+      state.car.areaLabel = '';
+      els.locationLabel.textContent = '';
+      showError('car', err.message);
+      updateSummaries();
+      renderBasketPanels();
+    });
+}
+
+function fetchAreaLabel(postcode) {
+  const encoded = encodeURIComponent(postcode.trim());
+  return fetch(`https://api.postcodes.io/postcodes/${encoded}`)
+    .then((res) => {
+      if (!res.ok) throw new Error('Postcode lookup failed.');
+      return res.json();
+    })
+    .then((json) => {
+      if (json.status !== 200 || !json.result) throw new Error('Postcode not found.');
+      const result = json.result;
+      const place = [result.admin_district, result.region].filter(Boolean).join(', ');
+      return `${result.postcode.toUpperCase()} • ${place || result.country || 'UK'}`;
+    });
+}
+
+function handleVehicleLookup() {
+  const reg = els.reg.value.trim();
+  if (reg.length < 5) {
+    state.car.vehicle = null;
+    els.vehicleLabel.textContent = '';
+    updateSummaries();
+    renderBasketPanels();
+    return;
+  }
+  state.car.reg = reg.toUpperCase();
+  els.vehicleLabel.textContent = 'Searching vehicle…';
+  lookupVehicle(reg)
+    .then((vehicle) => {
+      state.car.vehicle = vehicle;
+      els.vehicleLabel.textContent = `🚗 ${vehicle.make} ${vehicle.model} (${vehicle.year})`;
+      clearError('car');
+      updateSummaries();
+      renderBasketPanels();
+    })
+    .catch((err) => {
+      state.car.vehicle = null;
+      els.vehicleLabel.textContent = '';
+      showError('car', err.message);
+      updateSummaries();
+      renderBasketPanels();
+    });
+}
+
+function lookupVehicle(reg) {
+  return new Promise((resolve, reject) => {
+    const clean = reg.replace(/\s+/g, '').toUpperCase();
+    if (clean.length < 5) {
+      reject(new Error('Registration looks too short.'));
+      return;
+    }
+    const matched = mockVehicles.find((item) => item.pattern.test(clean));
+    const fallbackYear = 2014 + (clean.charCodeAt(0) % 8);
+    const payload = matched || { make: 'Example Motors', model: 'Hatchback', year: fallbackYear };
+    setTimeout(() => resolve({ ...payload, reg: clean }), 250);
+  });
 }
 
 function renderCategories() {
@@ -242,8 +352,19 @@ function renderBasket(container, title = 'Basket') {
   header.innerHTML = `<h4>${title}</h4>`;
   container.appendChild(header);
 
+  const carLines = buildCarSummaryLines();
+  if (carLines.length) {
+    const carBox = document.createElement('div');
+    carBox.className = 'summary-box';
+    carBox.innerHTML = `<strong>Your vehicle</strong><div class="service-meta">${carLines.join('<br>')}</div>`;
+    container.appendChild(carBox);
+  }
+
   if (!state.basket.length) {
-    container.innerHTML += '<p class="section-subtitle">Add services to see your quote.</p>';
+    const empty = document.createElement('p');
+    empty.className = 'section-subtitle';
+    empty.textContent = 'Add services to see your quote.';
+    container.appendChild(empty);
     renderMechanics(container);
     return;
   }
@@ -398,8 +519,9 @@ function validateCar() {
     showError('car', 'Enter a valid registration and postcode to continue.');
     return false;
   }
-  state.car = { reg: reg.toUpperCase(), postcode: postcode.toUpperCase() };
+  state.car = { ...state.car, reg: reg.toUpperCase(), postcode: postcode.toUpperCase() };
   updateSummaries();
+  renderBasketPanels();
   return true;
 }
 
@@ -449,8 +571,11 @@ function findServiceById(id) {
 }
 
 function updateSummaries() {
-  if (state.car.reg || state.car.postcode) {
-    els.carSummary.textContent = `${state.car.reg || 'Reg pending'} • ${state.car.postcode || 'Postcode pending'}`;
+  const carLines = buildCarSummaryLines();
+  if (carLines.length) {
+    els.carSummary.innerHTML = `<strong>Vehicle</strong><div class="service-meta">${carLines.join('<br>')}</div>`;
+  } else {
+    els.carSummary.textContent = 'Add your registration and postcode to start your quote.';
   }
 
   if (state.selectedCategory) {
@@ -466,11 +591,24 @@ function updateSummaries() {
   }
 
   const total = state.basket.reduce((sum, item) => sum + item.price, 0);
+  const carInfo = carLines.join(' • ') || 'Vehicle pending';
   els.confirmSummary.innerHTML = `
-    <div><strong>Vehicle:</strong> ${state.car.reg || '—'} (${state.car.postcode || '—'})</div>
+    <div><strong>Vehicle:</strong> ${carInfo}</div>
     <div><strong>Services:</strong><br>${state.basket.map((s) => s.name).join('<br>') || 'None selected'}</div>
     <div><strong>Availability:</strong> ${state.availability || 'Not provided'} • ${state.timeSlot || ''}</div>
     <div><strong>Contact:</strong> ${state.contact.name || '—'} • ${state.contact.email || '—'} • ${state.contact.phone || '—'}</div>
     <div class="basket-total" style="margin-top:8px;"><span>Total</span><span>£${total.toFixed(2)}</span></div>
   `;
+}
+
+function buildCarSummaryLines() {
+  const lines = [];
+  if (state.car.reg) lines.push(state.car.reg);
+  if (state.car.vehicle) {
+    const { make, model, year } = state.car.vehicle;
+    lines.push(`${make} ${model} (${year})`);
+  }
+  const location = [state.car.postcode, state.car.areaLabel].filter(Boolean).join(' • ');
+  if (location) lines.push(location);
+  return lines;
 }
