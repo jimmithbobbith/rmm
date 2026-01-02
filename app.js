@@ -57,6 +57,7 @@ function cacheElements() {
   els.panes = steps.map((step) => document.getElementById(`step-${step.id}`));
   els.back = document.getElementById("back");
   els.next = document.getElementById("next");
+  els.headerTotal = document.getElementById("header-total");
   els.reg = document.getElementById("reg");
   els.postcode = document.getElementById("postcode");
   els.carError = document.getElementById("car-error");
@@ -421,6 +422,7 @@ function addServiceToBasket(service) {
 }
 
 function renderBasketPanels() {
+  updateHeaderTotal();
   renderBasket(els.basket, "Basket");
   renderBasket(els.basketDetails, "Basket");
   renderMobileBasket();
@@ -495,6 +497,12 @@ function renderMobileBasket() {
       .getElementById("step-services")
       .scrollIntoView({ behavior: "smooth" });
   };
+}
+
+function updateHeaderTotal() {
+  if (!els.headerTotal) return;
+  const total = state.basket.reduce((sum, item) => sum + item.price, 0);
+  els.headerTotal.textContent = `Total: £${total.toFixed(2)}`;
 }
 
 function renderDriveableOptions() {
