@@ -1,3 +1,6 @@
+const SUPABASE_FUNCTIONS_URL =
+  "https://fwxrhfshfldubinjxvyx.functions.supabase.co";
+
 const steps = [
   { id: "car", label: "Car" },
   { id: "category", label: "Select work" },
@@ -49,6 +52,7 @@ function ensureLookupModeAvailable() {
 function getFunctionsBaseUrl() {
   const meta = document.querySelector('meta[name="functions-url"]');
   const candidate =
+    SUPABASE_FUNCTIONS_URL ||
     (typeof window !== "undefined" && window.FUNCTIONS_URL) ||
     meta?.content ||
     (document.body?.dataset.functionsUrl ?? "") ||
@@ -400,7 +404,7 @@ async function lookupVehicleFromApi(reg) {
     );
   }
 
-  const response = await fetch(`${functionsBaseUrl}/lookup-vehicle`, {
+  const response = await fetch(`${SUPABASE_FUNCTIONS_URL}/lookup-vehicle`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ reg: clean, postcode: state.car.postcode || undefined }),
