@@ -1,14 +1,14 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 :root {
-  --background: #f6f7f8;
+  --background: #ffffff;
   --surface: #ffffff;
   --ink: #0b0b0f;
   --muted: #4b5563;
-  --border: #e5e7eb;
+  --border: #e5e6eb;
   --accent: #ff8a00;
   --accent-strong: #ff7000;
-  --shadow: 0 14px 50px rgba(0, 0, 0, 0.12);
+  --shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
 }
 
 * {
@@ -42,13 +42,14 @@ header.topbar {
   position: sticky;
   top: 0;
   z-index: 20;
-  background: #0b0b0f;
-  color: #fff;
-  padding: 14px 24px;
+  background: var(--surface);
+  color: var(--ink);
+  padding: 12px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06);
 }
 
 .logo {
@@ -79,11 +80,11 @@ header.topbar {
 .header-total {
   font-weight: 800;
   font-size: 16px;
-  color: #fff;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 10px 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: var(--ink);
+  background: #f7f7f7;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
 }
 
 .logo span {
@@ -92,7 +93,7 @@ header.topbar {
 
 .help-link {
   font-weight: 600;
-  color: #fff;
+  color: var(--ink);
 }
 
 .progress {
