@@ -1,0 +1,23 @@
+name: Deploy Supabase Edge Functions
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Deploy Edge Functions
+        uses: supabase/supabase-actions@v1
+        with:
+          supabase_access_token: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          project_id: ${{ secrets.SUPABASE_PROJECT_ID }}
+          command: functions deploy --project-ref ${{ secrets.SUPABASE_PROJECT_ID }} --force
