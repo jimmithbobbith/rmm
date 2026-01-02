@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ClickMechanic booking flow</title>
+    <title>Ringwood Mobile Mechanics | Book a mechanic</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -22,6 +22,7 @@
           alt="RMM logo"
           class="logo-mark"
         />
+        <span class="logo-name">Ringwood Mobile Mechanics</span>
       </div>
       <div class="topbar-actions">
         <div class="header-total" id="header-total">Total: £0.00</div>
@@ -51,14 +52,30 @@
                 autocomplete="off"
               />
             </div>
-            <div class="input">
-              <label for="postcode">Postcode</label>
-              <input
+          <div class="input">
+            <label for="postcode">Postcode</label>
+            <input
                 id="postcode"
                 name="postcode"
                 placeholder="e.g. BH24 1AA"
-                autocomplete="off"
-              />
+              autocomplete="off"
+            />
+          </div>
+        </div>
+          <div class="lookup-mode" role="group" aria-label="Vehicle lookup mode">
+            <div>
+              <p class="lookup-mode-title">Vehicle lookup</p>
+              <p class="section-subtitle">
+                Use the DVLA checker or switch to a built-in test vehicle.
+              </p>
+            </div>
+            <div class="pill-toggle" id="lookup-mode">
+              <button class="pill-button active" type="button" data-mode="dvla">
+                DVLA lookup
+              </button>
+              <button class="pill-button" type="button" data-mode="test">
+                Test car
+              </button>
             </div>
           </div>
           <div class="lookup-row">
