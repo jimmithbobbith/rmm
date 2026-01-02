@@ -11,7 +11,7 @@ const state = {
   car: { reg: "", postcode: "", areaLabel: "", vehicle: null },
   selectedCategory: null,
   basket: [],
-  availability: { day: "", slot: "" },
+  availability: [],
   driveable: null,
   notes: "",
   clarifier: {
@@ -165,6 +165,13 @@ const mockVehicles = [
   { pattern: /^EF/, make: "Vauxhall", model: "Corsa", year: 2017 },
 ];
 
+const categoryIcons = {
+  repairs: "fa-screwdriver-wrench",
+  diagnostics: "fa-magnifying-glass-chart",
+  servicing: "fa-clipboard-list",
+  prepurchase: "fa-car-side",
+};
+
 function debounce(fn, delay = 400) {
   let timer;
   return (...args) => {
@@ -184,16 +191,21 @@ function handlePostcodeLookup() {
   if (!postcodeValid) {
     state.car.areaLabel = "";
     els.locationLabel.textContent = "";
+    els.locationLabel.classList.add("hidden");
     updateSummaries();
     renderBasketPanels();
     return;
   }
   state.car.postcode = postcode.toUpperCase();
+  els.locationLabel.classList.remove("hidden");
   els.locationLabel.textContent = "Looking up area…";
   fetchAreaLabel(postcode)
     .then((label) => {
       state.car.areaLabel = label;
-      els.locationLabel.textContent = label ? `📍 ${label}` : "";
+      els.locationLabel.textContent = label
+        ? `📍 ${state.car.postcode} • ${label}`
+        : "";
+      els.locationLabel.classList.toggle("hidden", !els.locationLabel.textContent);
       prefillAddressPostcode();
       updateSummaries();
       renderBasketPanels();
@@ -201,6 +213,7 @@ function handlePostcodeLookup() {
     .catch((err) => {
       state.car.areaLabel = "";
       els.locationLabel.textContent = "";
+      els.locationLabel.classList.add("hidden");
       showError("car", err.message);
       updateSummaries();
       renderBasketPanels();
@@ -221,7 +234,7 @@ function fetchAreaLabel(postcode) {
       const place = [result.admin_district, result.region]
         .filter(Boolean)
         .join(", ");
-      return `${result.postcode.toUpperCase()} • ${place || result.country || "UK"}`;
+      return place || result.country || "";
     });
 }
 
@@ -286,7 +299,14 @@ function renderCategories() {
     const card = document.createElement("button");
     card.type = "button";
     card.className = "category-card";
-    card.innerHTML = `<h4>${category.name}</h4><p class="section-subtitle">${category.summary}</p>`;
+    const icon = categoryIcons[category.id] || "fa-car";
+    card.innerHTML = `
+      <div class="category-icon"><i class="fa-solid ${icon}" aria-hidden="true"></i></div>
+      <div>
+        <h3>${category.name}</h3>
+        <p class="category-summary">${category.summary}</p>
+      </div>
+    `;
     card.addEventListener("click", () => selectCategory(category.id));
     card.id = `cat-${category.id}`;
     els.categoryGrid.appendChild(card);
@@ -333,16 +353,22 @@ function renderServices() {
     const card = document.createElement("div");
     card.className = "service-card";
     card.innerHTML = `
-      <div>
-        <h5>${service.name}</h5>
-        <p class="service-meta">${service.description}</p>
-        <p class="service-meta">⭐ ${service.rating.toFixed(2)} • ${service.reviews} reviews</p>
+      <div class="service-body">
+        <div class="service-header">
+          <h4>${service.name}</h4>
+          <p class="service-rating">⭐ ${service.rating.toFixed(2)} • ${service.reviews} reviews</p>
+        </div>
+        <p class="service-description">${service.description}</p>
         ${service.tag ? `<span class="badge">${service.tag}</span>` : ""}
       </div>
       <div class="service-actions">
-        <div class="price">£${service.price.toFixed(2)}</div>
-        <button class="button secondary" data-info="${service.id}">More info</button>
-        <button class="button" data-add="${service.id}">${state.basket.find((b) => b.id === service.id) ? "Added" : "Add"}</button>
+        <div class="price-stack">
+          <div class="price">£${service.price.toFixed(2)}</div>
+        </div>
+        <div class="service-buttons">
+          <button class="button secondary" data-info="${service.id}">More info</button>
+          <button class="button" data-add="${service.id}">${state.basket.find((b) => b.id === service.id) ? "Added" : "Add"}</button>
+        </div>
       </div>
     `;
     card
@@ -420,7 +446,6 @@ function renderBasket(container, title = "Basket") {
     empty.className = "section-subtitle";
     empty.textContent = "Add services to see your quote.";
     container.appendChild(empty);
-    renderMechanics(container);
     return;
   }
 
@@ -454,21 +479,6 @@ function renderBasket(container, title = "Basket") {
 
   container.appendChild(list);
   container.appendChild(totalRow);
-  renderMechanics(container);
-}
-
-function renderMechanics(container) {
-  if (!state.data || !state.data.mechanics) return;
-  const wrap = document.createElement("div");
-  wrap.className = "summary-box";
-  wrap.innerHTML = "<strong>Your local mechanics</strong>";
-  state.data.mechanics.forEach((m) => {
-    const row = document.createElement("div");
-    row.className = "service-meta";
-    row.textContent = `${m.name} • ${m.rating.toFixed(1)} (${m.jobs} jobs)`;
-    wrap.appendChild(row);
-  });
-  container.appendChild(wrap);
 }
 
 function renderMobileBasket() {
@@ -524,18 +534,29 @@ function renderWeekAvailability() {
     const column = document.createElement("div");
     column.className = "day-column";
     column.innerHTML = `<div class="day-label">${dayLabel}</div>`;
-    ["Morning", "Afternoon", "Evening"].forEach((slot) => {
+    ["8am - 12pm", "12pm - 4pm", "4pm - 8pm"].forEach((slot) => {
       const button = document.createElement("button");
       button.type = "button";
       button.className = "slot-pill";
-      const label = `${slot} window`;
+      const label = `${slot}`;
       button.textContent = label;
-      const isActive =
-        state.availability.day === date.toDateString() &&
-        state.availability.slot === label;
+      const isActive = state.availability.some(
+        (selection) =>
+          selection.day === date.toDateString() && selection.slot === label,
+      );
       if (isActive) button.classList.add("active");
       button.addEventListener("click", () => {
-        state.availability = { day: date.toDateString(), slot: label };
+        if (isActive) {
+          state.availability = state.availability.filter(
+            (selection) =>
+              !(selection.day === date.toDateString() && selection.slot === label),
+          );
+        } else {
+          state.availability = [
+            ...state.availability,
+            { day: date.toDateString(), slot: label },
+          ];
+        }
         renderWeekAvailability();
         clearError("details");
         updateSummaries();
@@ -691,10 +712,12 @@ function validateStep() {
     case "category":
       if (!state.selectedCategory) {
         showError("category", "Select a category to continue.");
+        scrollToElement(els.categoryGrid);
         return false;
       }
       if (!state.basket.length) {
         showError("services", "Add at least one service to your basket.");
+        scrollToElement(els.serviceList);
         return false;
       }
       return true;
@@ -713,6 +736,7 @@ function validateCar() {
   );
   if (!reg || !postcodeValid) {
     showError("car", "Enter a valid registration and postcode to continue.");
+    scrollToElement(els.carError || els.reg);
     return false;
   }
   state.car = {
@@ -752,14 +776,17 @@ function validateDetails() {
       "details",
       "Please add your name, phone and address with a valid postcode. Email is optional.",
     );
+    scrollToElement(els.fullName);
     return false;
   }
-  if (!state.availability.day || !state.availability.slot) {
+  if (!state.availability.length) {
     showError("details", "Select an availability slot for the week.");
+    scrollToElement(els.weekAvailability);
     return false;
   }
   if (state.driveable === null) {
     showError("details", "Tell us if the vehicle is driveable.");
+    scrollToElement(els.driveable);
     return false;
   }
   updateSummaries();
@@ -814,8 +841,12 @@ function updateSummaries() {
     els.detailsSummary.innerHTML += `<div class="service-meta">${list}</div>`;
   }
 
-  const availabilityText = state.availability.day
-    ? `${state.availability.slot} on ${state.availability.day}`
+  const availabilityText = state.availability.length
+    ? state.availability
+        .map(
+          (slot) => `${slot.slot} on ${formatAvailabilityDay(slot.day)}`,
+        )
+        .join("<br>")
     : "Availability not set";
   const driveableText =
     state.driveable === null
@@ -833,8 +864,12 @@ function updateSummaries() {
 
   const total = state.basket.reduce((sum, item) => sum + item.price, 0);
   const carInfo = carLines.join(" • ") || "Vehicle pending";
-  const availabilityLabel = state.availability.day
-    ? `${state.availability.day} • ${state.availability.slot}`
+  const availabilityLabel = state.availability.length
+    ? state.availability
+        .map(
+          (slot) => `${formatAvailabilityDay(slot.day)} • ${slot.slot}`,
+        )
+        .join("<br>")
     : "Not provided";
   const contactAddress = state.contact.addressLine
     ? `${state.contact.addressLine} • ${state.contact.addressPostcode || ""}`
@@ -860,6 +895,21 @@ function updateSummaries() {
     <div><strong>Clarifier:</strong><br>${clarifierSummary}</div>
     <div class="basket-total" style="margin-top:8px;"><span>Total</span><span>£${total.toFixed(2)}</span></div>
   `;
+}
+
+function formatAvailabilityDay(dayString) {
+  const date = new Date(dayString);
+  if (Number.isNaN(date)) return dayString;
+  return date.toLocaleDateString("en-GB", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  });
+}
+
+function scrollToElement(el) {
+  if (!el || typeof el.scrollIntoView !== "function") return;
+  el.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 function buildCarSummaryLines() {
