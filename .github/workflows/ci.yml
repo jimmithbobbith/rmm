@@ -30,7 +30,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Scan for secrets
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@latest
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           args: detect --source . --no-banner --redact
