@@ -498,9 +498,10 @@ function renderMobileBasket() {
   }
   els.basketMobile.innerHTML = `<strong>${count} item${count > 1 ? "s" : ""}</strong><span>£${total.toFixed(2)}</span>`;
   els.basketMobile.onclick = () => {
-    document
-      .getElementById("step-services")
-      .scrollIntoView({ behavior: "smooth" });
+    const target =
+      document.getElementById("service-list") ||
+      document.getElementById("step-category");
+    if (target) target.scrollIntoView({ behavior: "smooth" });
   };
 }
 
