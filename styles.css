@@ -542,6 +542,13 @@ header.topbar {
   background: #fff;
   border-top: 1px solid var(--border);
   padding: 14px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.navbar-inner {
+  width: 100%;
+  max-width: 1180px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
@@ -743,7 +750,7 @@ header.topbar {
     position: relative;
     top: 0;
   }
-  .navbar {
+  .navbar-inner {
     grid-template-columns: 1fr;
   }
   .basket-mobile {
