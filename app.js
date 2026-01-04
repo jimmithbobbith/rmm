@@ -135,12 +135,7 @@ function updateProgress() {
   const nodes = Array.from(els.progress.children);
   nodes.forEach((node, idx) => {
     node.classList.remove("active", "complete");
-    const icon = node.querySelector(".icon");
-    if (icon) icon.textContent = idx + 1;
-    if (idx < state.currentStep) {
-      node.classList.add("complete");
-      if (icon) icon.innerHTML = "<i class=\"fa-solid fa-check\"></i>";
-    }
+    if (idx < state.currentStep) node.classList.add("complete");
     if (idx === state.currentStep) node.classList.add("active");
   });
 }
